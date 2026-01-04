@@ -1,0 +1,86 @@
+import { NamePath } from "antd/es/form/interface";
+
+export interface IPersonalInfo {
+  name: string;
+  email: string;
+  phone: string;
+  title: string;
+  location: string;
+  linkedin: string;
+  portfolio: string;
+  aboutMe: string;
+}
+export interface IExperience {
+  id: string;
+  company: string;
+  position: string;
+  startDate: string;
+  endDate: string;
+  current: boolean;
+  description: string;
+}
+
+export interface IData {
+  // Personal Info
+  name: string;
+  email: string;
+  phone: string;
+  title: string;
+  location: string;
+  linkedin: string;
+  portfolio: string;
+  aboutMe: string;
+
+  // Experience
+  experiences: Array<{
+    id: string;
+    company: string;
+    position: string;
+    startDate: string;
+    endDate: string;
+    current: boolean;
+    description: string;
+  }>;
+
+  // Education
+  education: Array<{
+    id: string;
+    institution: string;
+    degree: string;
+    field: string;
+    startDate: string;
+    endDate: string;
+    gpa?: string;
+    description: string;
+  }>;
+
+  // Skills
+  skills: string[];
+
+  // Projects
+  projects: Array<{
+    id: string;
+    name: string;
+    description: string;
+    technologies: string[];
+    link?: string;
+  }>;
+
+  // Certifications
+  certifications: Array<{
+    id: string;
+    name: string;
+    issuer: string;
+    date: string;
+    link?: string;
+  }>;
+}
+
+export interface IFieldData {
+  errors: string[];
+  warnings: string[];
+  name: NamePath[];
+  touched: boolean;
+  validating: boolean;
+  value: any;
+}

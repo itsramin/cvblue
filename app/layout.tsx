@@ -6,6 +6,7 @@ import {
 import "./globals.css";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import { App, ConfigProvider } from "antd";
+import Header from "@/components/Header";
 
 // const geistSans = Geist({
 //   variable: "--font-geist-sans",
@@ -50,6 +51,7 @@ export default function RootLayout({
                 // style={{ direction: "rtl" }}
                 className="select-none md:select-auto"
               >
+                <Header />
                 {children}
               </div>
             </App>
