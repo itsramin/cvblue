@@ -48,11 +48,11 @@ export default function Main() {
       label: "Education",
       children: <Education />,
     },
-    // {
-    //   key: "skills",
-    //   label: "Skills",
-    //   children: <Skills />,
-    // },
+    {
+      key: "skills",
+      label: "Skills",
+      children: <Skills />,
+    },
     // {
     //   key: "certifications",
     //   label: "Certifications",

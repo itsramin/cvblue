@@ -1,73 +1,83 @@
+import React, { useEffect, useRef, useState } from "react";
+import { PlusOutlined } from "@ant-design/icons";
+import type { InputRef } from "antd";
+import { Button, Flex, Input, Tag } from "antd";
 import { useData } from "@/store/store";
-import { useState } from "react";
-import { Form, Input, Button, Space, Select, Tag, Typography } from "antd";
 
-const { Item } = Form;
-const { Text } = Typography;
+const tagInputStyle: React.CSSProperties = {
+  width: 120,
+  marginInlineEnd: 8,
+  verticalAlign: "top",
+};
 
-export default function Skills() {
-  const { data, updateData, addSkill, removeSkill } = useData();
-  const [newSkill, setNewSkill] = useState("");
+const Skills: React.FC = () => {
+  const [enteredSkills, setEnteredSkills] = useState<string[]>([]);
+  const [inputVisible, setInputVisible] = useState(false);
+  const [inputValue, setInputValue] = useState("");
+  const { updateSkills, skills } = useData();
 
-  const handleAddSkill = () => {
-    if (newSkill.trim()) {
-      addSkill(newSkill.trim());
-      setNewSkill("");
+  const inputRef = useRef<InputRef>(null);
+
+  useEffect(() => {
+    if (inputVisible) {
+      inputRef.current?.focus();
     }
+  }, [inputVisible]);
+
+  useEffect(() => {
+    setEnteredSkills(skills);
+  }, []);
+
+  const handleClose = (removedTag: string) => {
+    const newSkill = enteredSkills.filter((tag) => tag !== removedTag);
+
+    setEnteredSkills(newSkill);
+    updateSkills(newSkill);
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      handleAddSkill();
+  const showInput = () => {
+    setInputVisible(true);
+  };
+
+  const handleInputConfirm = () => {
+    if (inputValue && !enteredSkills.includes(inputValue)) {
+      setEnteredSkills([...enteredSkills, inputValue]);
+      updateSkills([...enteredSkills, inputValue]);
     }
+    setInputVisible(false);
+    setInputValue("");
   };
 
   return (
-    <>
-      <div className="mb-4">
-        <Space.Compact style={{ width: "100%" }}>
-          <Input
-            value={newSkill}
-            onChange={(e) => setNewSkill(e.target.value)}
-            onKeyDown={handleKeyPress}
-            placeholder="Add a skill (e.g., React, Python, Project Management)"
-          />
-          <Button type="primary" onClick={handleAddSkill}>
-            Add
-          </Button>
-        </Space.Compact>
-      </div>
-
-      <div className="mb-4">
-        <Item name="skills">
-          <Select
-            mode="tags"
-            style={{ width: "100%" }}
-            placeholder="Select or add skills"
-            value={data.skills}
-            onChange={(value) => updateData({ ...data, skills: value })}
-          />
-        </Item>
-      </div>
-
-      <div className="flex flex-wrap gap-2">
-        {data.skills.map((skill, index) => (
-          <Tag
-            key={index}
-            closable
-            onClose={() => removeSkill(index)}
-            className="text-sm py-1 px-3"
-          >
-            {skill}
-          </Tag>
-        ))}
-        {data.skills.length === 0 && (
-          <Text type="secondary">
-            No skills added yet. Add some skills to showcase your expertise.
-          </Text>
-        )}
-      </div>
-    </>
+    <Flex gap="4px" align="center" wrap>
+      {enteredSkills.map((tag) => (
+        <Tag
+          color="blue"
+          key={tag}
+          closable
+          style={{ userSelect: "none" }}
+          onClose={() => handleClose(tag)}
+        >
+          <span>{tag}</span>
+        </Tag>
+      ))}
+      {inputVisible ? (
+        <Input
+          ref={inputRef}
+          type="text"
+          style={tagInputStyle}
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          onBlur={handleInputConfirm}
+          onPressEnter={handleInputConfirm}
+        />
+      ) : (
+        <Button icon={<PlusOutlined />} onClick={showInput}>
+          New Skill
+        </Button>
+      )}
+    </Flex>
   );
-}
+};
+
+export default Skills;

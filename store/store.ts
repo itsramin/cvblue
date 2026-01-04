@@ -1,24 +1,32 @@
-import { IEducation, IExperience, IPersonalInfo } from "@/type/type";
+import { IEducation, IExperience, IPersonalInfo, ISkills } from "@/type/type";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 
 interface UserDataState {
   hasHydrated: boolean;
+
+  ////// personalInfo
   personalInfo: IPersonalInfo;
   updatePersonalInfo: <K extends keyof IPersonalInfo>(
     field: K,
     value: IPersonalInfo[K]
   ) => void;
 
+  ////// experiences
   experiences: IExperience[];
   addExperience: (data: IExperience) => void;
   removeExperience: (id: string) => void;
   updateExperience: (id: string, data: Partial<IExperience>) => void;
 
+  ////// educations
   educations: IEducation[];
   addEducation: (data: IEducation) => void;
   removeEducation: (id: string) => void;
   updateEducation: (id: string, data: Partial<IEducation>) => void;
+
+  ////// skills
+  skills: ISkills;
+  updateSkills: (data: ISkills) => void;
 }
 
 const initialPersonalInfo: IPersonalInfo = {
@@ -36,15 +44,15 @@ export const useData = create<UserDataState>()(
   persist(
     (set) => ({
       hasHydrated: false,
-      //////
+
+      ////// personalInfo
       personalInfo: initialPersonalInfo,
       updatePersonalInfo: (field, value) =>
         set((state) => ({
           personalInfo: { ...state.personalInfo, [field]: value },
         })),
 
-      /////////
-
+      ///////// experiences
       experiences: [],
       addExperience: (data) =>
         set((state) => ({ experiences: [...state.experiences, data] })),
@@ -59,7 +67,7 @@ export const useData = create<UserDataState>()(
           ),
         })),
 
-      ////
+      //// educations
       educations: [],
       addEducation: (data) =>
         set((state) => ({ educations: [...state.educations, data] })),
@@ -73,6 +81,10 @@ export const useData = create<UserDataState>()(
             edu.id === id ? { ...edu, ...data } : edu
           ),
         })),
+
+      //// skills
+      skills: [],
+      updateSkills: (data) => set(() => ({ skills: data })),
     }),
 
     {

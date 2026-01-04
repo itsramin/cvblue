@@ -30,6 +30,7 @@ export interface IEducation {
   gpa?: string;
   description: string;
 }
+export type ISkills = string[];
 
 export interface IStyleOptions {
   fontFamily: string;
