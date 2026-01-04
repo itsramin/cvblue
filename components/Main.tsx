@@ -13,7 +13,7 @@ export default function Main() {
   // const { data, updateField } = useData();
 
   // const [form] = Form.useForm();
-  const [activeKeys, setActiveKeys] = useState<string[]>(["personal"]);
+  const [activeKeys, setActiveKeys] = useState<string[]>(["experience"]);
 
   // useEffect(() => {
   //   if (data) {

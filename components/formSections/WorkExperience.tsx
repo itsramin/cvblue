@@ -10,10 +10,10 @@ import {
   Typography,
   DatePicker,
   Switch,
-  List,
   Card,
   Descriptions,
   Space,
+  Tag,
 } from "antd";
 import {
   DeleteOutlined,
@@ -21,90 +21,16 @@ import {
   SaveOutlined,
   EditOutlined,
 } from "@ant-design/icons";
-import { DndContext } from "@dnd-kit/core";
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
-import { HolderOutlined } from "@ant-design/icons";
-import type { DragEndEvent, DraggableAttributes } from "@dnd-kit/core";
-import type { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
-import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
-import {
-  arrayMove,
-  SortableContext,
-  useSortable,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
-import type { GetProps } from "antd";
+import React, { useEffect, useState } from "react";
+import type { DragEndEvent } from "@dnd-kit/core";
+import { arrayMove } from "@dnd-kit/sortable";
 import dayjs from "dayjs";
-
-interface SortableListItemContextProps {
-  setActivatorNodeRef?: (element: HTMLElement | null) => void;
-  listeners?: SyntheticListenerMap;
-  attributes?: DraggableAttributes;
-}
-
-const SortableListItemContext = createContext<SortableListItemContextProps>({});
+import { DragHandle } from "../drag/DragHandle";
+import { DragSortableList } from "../drag/DragSortableList";
 
 const { Item } = Form;
 const { TextArea } = Input;
 const { Text } = Typography;
-
-const DragHandle: React.FC = () => {
-  const { setActivatorNodeRef, listeners, attributes } = useContext(
-    SortableListItemContext
-  );
-  return (
-    <Button
-      type="text"
-      size="small"
-      icon={<HolderOutlined />}
-      style={{ cursor: "move" }}
-      ref={setActivatorNodeRef}
-      {...attributes}
-      {...listeners}
-    />
-  );
-};
-
-const SortableListItem: React.FC<
-  GetProps<typeof List.Item> & { itemKey: number }
-> = (props) => {
-  const { itemKey, style, ...rest } = props;
-
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    setActivatorNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: itemKey });
-
-  const listStyle: React.CSSProperties = {
-    ...style,
-    transform: CSS.Translate.toString(transform),
-    transition,
-    ...(isDragging ? { position: "relative", zIndex: 9999 } : {}),
-  };
-
-  const memoizedValue = useMemo<SortableListItemContextProps>(
-    () => ({ setActivatorNodeRef, listeners, attributes }),
-    [setActivatorNodeRef, listeners, attributes]
-  );
-
-  return (
-    <SortableListItemContext.Provider value={memoizedValue}>
-      <List.Item {...rest} ref={setNodeRef} style={listStyle} />
-    </SortableListItemContext.Provider>
-  );
-};
 
 export default function WorkExperience() {
   const {
@@ -122,9 +48,10 @@ export default function WorkExperience() {
       key: number;
       company: string;
       id: string;
-      data: { key: string; label: string; children: string }[];
+      data: { key: string; label: string; children: React.ReactNode }[];
     }[]
   >([]);
+  const [isCurrent, setIsCurrent] = useState(false);
 
   useEffect(() => {
     const converted = experiences.map((e, index) => ({
@@ -134,34 +61,30 @@ export default function WorkExperience() {
       data: [
         {
           key: "company",
-          label: "company",
+          label: "Company",
           children: e.company,
         },
         {
           key: "position",
-          label: "position",
+          label: "Position",
           children: e.position,
         },
         {
           key: "startDate",
-          label: "startDate",
+          label: "Start Date",
           children: e.startDate,
         },
         {
-          key: "endDate",
-          label: "endDate",
-          children: e.endDate,
+          key: "ndDate",
+          label: e.current ? "" : "End Date",
+          children: e.current ? <Tag color="green">Working</Tag> : e.endDate,
         },
-        {
-          key: "current",
-          label: "current",
-          children: e.current ? "Working" : "",
-        },
+
         {
           key: "description",
-          label: "description",
+          label: "Description",
           children: e.description,
-          span: 3,
+          span: { xs: 1, sm: 2, md: 3, lg: 3, xl: 2, xxl: 2 },
         },
       ],
     }));
@@ -243,53 +166,47 @@ export default function WorkExperience() {
     setEditingId(null);
   };
 
+  const renderExperienceCard = (item: (typeof convertedData)[0]) => (
+    <Card
+      className="w-full"
+      title={
+        <div className="flex items-center gap-2">
+          <DragHandle />
+          <span>{item.company}</span>
+        </div>
+      }
+      extra={
+        <Space>
+          <Button
+            type="text"
+            icon={<EditOutlined />}
+            onClick={() => handleEdit(item.id)}
+            size="small"
+          />
+          <DeleteOutlined
+            onClick={() => {
+              removeExperience(item.id);
+            }}
+            style={{ color: "#ff4d4f", cursor: "pointer" }}
+          />
+        </Space>
+      }
+    >
+      <Descriptions
+        items={item.data}
+        column={{ xs: 1, sm: 2, md: 3, lg: 3, xl: 4, xxl: 4 }}
+      />
+    </Card>
+  );
+
   return (
     <div className="flex flex-col gap-y-6">
-      <DndContext
-        modifiers={[restrictToVerticalAxis]}
+      <DragSortableList
+        items={convertedData}
+        renderItem={renderExperienceCard}
         onDragEnd={onDragEnd}
-        id="list-drag-sorting-handler"
-      >
-        <SortableContext
-          items={convertedData.map((item) => item.key)}
-          strategy={verticalListSortingStrategy}
-        >
-          <List
-            dataSource={convertedData}
-            renderItem={(item) => (
-              <SortableListItem key={item.key} itemKey={item.key}>
-                <Card
-                  className="w-full"
-                  title={
-                    <div className="flex items-center gap-2">
-                      <DragHandle />
-                      <span>{item.company}</span>
-                    </div>
-                  }
-                  extra={
-                    <Space>
-                      <Button
-                        type="text"
-                        icon={<EditOutlined />}
-                        onClick={() => handleEdit(item.id)}
-                        size="small"
-                      />
-                      <DeleteOutlined
-                        onClick={() => {
-                          removeExperience(item.id);
-                        }}
-                        style={{ color: "#ff4d4f", cursor: "pointer" }}
-                      />
-                    </Space>
-                  }
-                >
-                  <Descriptions items={item.data} />
-                </Card>
-              </SortableListItem>
-            )}
-          />
-        </SortableContext>
-      </DndContext>
+        itemKeyField="key"
+      />
 
       {(status === "new" || status === "edit") && (
         <Form form={form} onFinish={submitHandler}>
@@ -326,33 +243,8 @@ export default function WorkExperience() {
                 <DatePicker picker="month" style={{ width: "100%" }} />
               </Item>
             </Col>
-            <Col span={8}>
-              <Item
-                name="endDate"
-                label="End Date"
-                dependencies={["current"]}
-                rules={[
-                  ({ getFieldValue }) => ({
-                    validator(_, value) {
-                      const isCurrent = getFieldValue("current");
-                      if (!isCurrent && !value) {
-                        return Promise.reject(
-                          new Error("End date is required unless current")
-                        );
-                      }
-                      return Promise.resolve();
-                    },
-                  }),
-                ]}
-              >
-                <DatePicker
-                  picker="month"
-                  style={{ width: "100%" }}
-                  disabled={form.getFieldValue("current")}
-                />
-              </Item>
-            </Col>
-            <Col span={8}>
+
+            <Col span={4}>
               <Item
                 name="current"
                 label="Current Position"
@@ -360,6 +252,7 @@ export default function WorkExperience() {
               >
                 <Switch
                   onChange={(checked) => {
+                    setIsCurrent(checked);
                     if (checked) {
                       form.setFieldValue("endDate", null);
                     }
@@ -367,6 +260,31 @@ export default function WorkExperience() {
                 />
               </Item>
             </Col>
+            {!isCurrent && (
+              <Col span={8}>
+                <Item
+                  name="endDate"
+                  label="End Date"
+                  dependencies={["current"]}
+                  rules={[
+                    ({ getFieldValue }) => ({
+                      validator(_, value) {
+                        const isCurrent = getFieldValue("current");
+
+                        if (!isCurrent && !value) {
+                          return Promise.reject(
+                            new Error("End date is required unless current")
+                          );
+                        }
+                        return Promise.resolve();
+                      },
+                    }),
+                  ]}
+                >
+                  <DatePicker picker="month" style={{ width: "100%" }} />
+                </Item>
+              </Col>
+            )}
             <Col span={24}>
               <Item
                 name="description"
