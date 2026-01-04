@@ -211,7 +211,11 @@ export default function WorkExperience() {
                 label="Start Date"
                 rules={[{ required: true, message: "Start date is required" }]}
               >
-                <DatePicker picker="month" style={{ width: "100%" }} />
+                <DatePicker
+                  picker="month"
+                  style={{ width: "100%" }}
+                  allowClear
+                />
               </Item>
             </Col>
 
@@ -224,9 +228,6 @@ export default function WorkExperience() {
                 <Switch
                   onChange={(checked) => {
                     setIsCurrent(checked);
-                    if (checked) {
-                      form.setFieldValue("endDate", null);
-                    }
                   }}
                 />
               </Item>
@@ -252,7 +253,11 @@ export default function WorkExperience() {
                     }),
                   ]}
                 >
-                  <DatePicker picker="month" style={{ width: "100%" }} />
+                  <DatePicker
+                    picker="month"
+                    style={{ width: "100%" }}
+                    allowClear
+                  />
                 </Item>
               </Col>
             )}
@@ -276,7 +281,7 @@ export default function WorkExperience() {
               </Item>
             </Col>
           </Row>
-          <Space>
+          <div className="flex items-center justify-center gap-x-4">
             <Button
               icon={<SaveOutlined />}
               htmlType="submit"
@@ -288,7 +293,7 @@ export default function WorkExperience() {
             <Button onClick={handleCancel} className="mx-auto" type="default">
               Cancel
             </Button>
-          </Space>
+          </div>
         </Form>
       )}
 

@@ -19,6 +19,17 @@ export interface IExperience {
   current: boolean;
   description: string;
 }
+export interface IEducation {
+  id: string;
+  institution: string;
+  degree: string;
+  field: string;
+  startDate: string;
+  endDate: string;
+  current: boolean;
+  gpa?: string;
+  description: string;
+}
 
 export interface IStyleOptions {
   fontFamily: string;

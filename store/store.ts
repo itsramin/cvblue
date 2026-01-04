@@ -1,4 +1,4 @@
-import { IData, IExperience, IPersonalInfo } from "@/type/type";
+import { IEducation, IExperience, IPersonalInfo } from "@/type/type";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 
@@ -14,7 +14,11 @@ interface UserDataState {
   addExperience: (data: IExperience) => void;
   removeExperience: (id: string) => void;
   updateExperience: (id: string, data: Partial<IExperience>) => void;
-  reorderExperiences: (reorderedExperiences: IExperience[]) => void;
+
+  educations: IEducation[];
+  addEducation: (data: IEducation) => void;
+  removeEducation: (id: string) => void;
+  updateEducation: (id: string, data: Partial<IEducation>) => void;
 }
 
 const initialPersonalInfo: IPersonalInfo = {
@@ -32,11 +36,15 @@ export const useData = create<UserDataState>()(
   persist(
     (set) => ({
       hasHydrated: false,
+      //////
       personalInfo: initialPersonalInfo,
       updatePersonalInfo: (field, value) =>
         set((state) => ({
           personalInfo: { ...state.personalInfo, [field]: value },
         })),
+
+      /////////
+
       experiences: [],
       addExperience: (data) =>
         set((state) => ({ experiences: [...state.experiences, data] })),
@@ -50,9 +58,20 @@ export const useData = create<UserDataState>()(
             exp.id === id ? { ...exp, ...data } : exp
           ),
         })),
-      reorderExperiences: (reorderedExperiences) =>
-        set(() => ({
-          experiences: reorderedExperiences,
+
+      ////
+      educations: [],
+      addEducation: (data) =>
+        set((state) => ({ educations: [...state.educations, data] })),
+      removeEducation: (id) =>
+        set((state) => ({
+          educations: [...state.educations.filter((edu) => edu.id !== id)],
+        })),
+      updateEducation: (id, data) =>
+        set((state) => ({
+          educations: state.educations.map((edu) =>
+            edu.id === id ? { ...edu, ...data } : edu
+          ),
         })),
     }),
 
