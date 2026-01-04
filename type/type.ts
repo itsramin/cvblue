@@ -20,6 +20,13 @@ export interface IExperience {
   description: string;
 }
 
+export interface IStyleOptions {
+  fontFamily: string;
+  fontSize: number;
+  primaryColor: string;
+  secondaryColor: string;
+}
+
 export interface IData {
   // Personal Info
   name: string;

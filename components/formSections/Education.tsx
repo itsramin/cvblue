@@ -16,11 +16,11 @@ const { TextArea } = Input;
 const { Text } = Typography;
 
 export default function Education() {
-  const { data, addEducation, removeEducation } = useData();
+  // const { data, addEducation, removeEducation } = useData();
 
   return (
     <div className="flex flex-col gap-y-6">
-      <Form.List name="education">
+      {/* <Form.List name="education">
         {(fields, { add, remove }) => (
           <>
             {fields.map(({ key, name, ...restField }) => (
@@ -130,10 +130,10 @@ export default function Education() {
             ))}
           </>
         )}
-      </Form.List>
+      </Form.List> */}
       <Button
         icon={<PlusOutlined />}
-        onClick={addEducation}
+        // onClick={addEducation}
         className="mx-auto"
         type="primary"
       >
