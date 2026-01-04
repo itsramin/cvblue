@@ -22,24 +22,15 @@ import {
   EditOutlined,
 } from "@ant-design/icons";
 import React, { useEffect, useState } from "react";
-import type { DragEndEvent } from "@dnd-kit/core";
-import { arrayMove } from "@dnd-kit/sortable";
 import dayjs from "dayjs";
-import { DragHandle } from "../drag/DragHandle";
-import { DragSortableList } from "../drag/DragSortableList";
 
 const { Item } = Form;
 const { TextArea } = Input;
 const { Text } = Typography;
 
 export default function WorkExperience() {
-  const {
-    addExperience,
-    experiences,
-    removeExperience,
-    updateExperience,
-    reorderExperiences,
-  } = useData();
+  const { addExperience, experiences, removeExperience, updateExperience } =
+    useData();
   const [status, setStatus] = useState<"new" | "edit" | "">("");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form] = Form.useForm();
@@ -54,7 +45,21 @@ export default function WorkExperience() {
   const [isCurrent, setIsCurrent] = useState(false);
 
   useEffect(() => {
-    const converted = experiences.map((e, index) => ({
+    // Sort experiences by date (newer first)
+    const sortedExperiences = [...experiences].sort((a, b) => {
+      // Handle current positions (ongoing) - they should be first
+      if (a.current && !b.current) return -1;
+      if (!a.current && b.current) return 1;
+
+      // For end dates, use endDate if available, otherwise use startDate
+      const dateA = a.current ? a.startDate : a.endDate || a.startDate;
+      const dateB = b.current ? b.startDate : b.endDate || b.startDate;
+
+      // Compare in descending order (newer first)
+      return dayjs(dateB, "YYYY-MM").diff(dayjs(dateA, "YYYY-MM"));
+    });
+
+    const converted = sortedExperiences.map((e, index) => ({
       key: index,
       id: e.id,
       company: e.company,
@@ -91,31 +96,6 @@ export default function WorkExperience() {
 
     setConvertedData(converted);
   }, [experiences]);
-
-  const onDragEnd = ({ active, over }: DragEndEvent) => {
-    if (!active || !over) {
-      return;
-    }
-    if (active.id !== over.id) {
-      const activeIndex = experiences.findIndex(
-        (_, index) => index === active.id
-      );
-      const overIndex = experiences.findIndex((_, index) => index === over.id);
-
-      if (activeIndex !== -1 && overIndex !== -1) {
-        setConvertedData((prevState) => {
-          return arrayMove(prevState, activeIndex, overIndex);
-        });
-
-        const reorderedExperiences = arrayMove(
-          experiences,
-          activeIndex,
-          overIndex
-        );
-        reorderExperiences(reorderedExperiences);
-      }
-    }
-  };
 
   const submitHandler = (values: any) => {
     const newEx = {
@@ -166,47 +146,38 @@ export default function WorkExperience() {
     setEditingId(null);
   };
 
-  const renderExperienceCard = (item: (typeof convertedData)[0]) => (
-    <Card
-      className="w-full"
-      title={
-        <div className="flex items-center gap-2">
-          <DragHandle />
-          <span>{item.company}</span>
-        </div>
-      }
-      extra={
-        <Space>
-          <Button
-            type="text"
-            icon={<EditOutlined />}
-            onClick={() => handleEdit(item.id)}
-            size="small"
-          />
-          <DeleteOutlined
-            onClick={() => {
-              removeExperience(item.id);
-            }}
-            style={{ color: "#ff4d4f", cursor: "pointer" }}
-          />
-        </Space>
-      }
-    >
-      <Descriptions
-        items={item.data}
-        column={{ xs: 1, sm: 2, md: 3, lg: 3, xl: 4, xxl: 4 }}
-      />
-    </Card>
-  );
-
   return (
     <div className="flex flex-col gap-y-6">
-      <DragSortableList
-        items={convertedData}
-        renderItem={renderExperienceCard}
-        onDragEnd={onDragEnd}
-        itemKeyField="key"
-      />
+      {convertedData.map((item) => (
+        <Card
+          key={item.id}
+          className="w-full"
+          title={item.company}
+          extra={
+            <Space>
+              <Button
+                type="text"
+                icon={<EditOutlined />}
+                onClick={() => handleEdit(item.id)}
+                size="small"
+              />
+              <Button
+                type="text"
+                danger
+                icon={<DeleteOutlined />}
+                onClick={() => {
+                  removeExperience(item.id);
+                }}
+              />
+            </Space>
+          }
+        >
+          <Descriptions
+            items={item.data}
+            column={{ xs: 1, sm: 2, md: 3, lg: 3, xl: 4, xxl: 4 }}
+          />
+        </Card>
+      ))}
 
       {(status === "new" || status === "edit") && (
         <Form form={form} onFinish={submitHandler}>
