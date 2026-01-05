@@ -46,7 +46,7 @@ const initialPersonalInfo: IPersonalInfo = {
   title: "",
   location: "",
   linkedin: "",
-  portfolio: "",
+  links: [""],
   aboutMe: "",
 };
 

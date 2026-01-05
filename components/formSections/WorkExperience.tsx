@@ -282,15 +282,10 @@ export default function WorkExperience() {
             </Col>
           </Row>
           <div className="flex items-center justify-center gap-x-4">
-            <Button
-              icon={<SaveOutlined />}
-              htmlType="submit"
-              className="mx-auto"
-              type="primary"
-            >
+            <Button icon={<SaveOutlined />} htmlType="submit" type="primary">
               {status === "edit" ? "Update" : "Save"}
             </Button>
-            <Button onClick={handleCancel} className="mx-auto" type="default">
+            <Button onClick={handleCancel} type="default">
               Cancel
             </Button>
           </div>

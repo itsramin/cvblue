@@ -7,7 +7,7 @@ export interface IPersonalInfo {
   title: string;
   location: string;
   linkedin: string;
-  portfolio: string;
+  links: string[];
   aboutMe: string;
 }
 export interface IExperience {
