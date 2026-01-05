@@ -85,6 +85,11 @@ export default function PreviewPage() {
                   value={activeLayout}
                   onChange={(e) => setActiveLayout(e.target.value)}
                   options={layouts}
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 8,
+                  }}
                 />
               </Card>
 

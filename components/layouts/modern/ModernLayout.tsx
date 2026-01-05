@@ -236,6 +236,15 @@ export default function ModernLayout() {
                     <PdfText style={modern_styles.position}>
                       {experience.position}
                     </PdfText>
+
+                    {/* General Description (fallback) */}
+                    {experience.description && (
+                      <View style={{ marginTop: 8 }}>
+                        <PdfText style={modern_styles.bulletItem}>
+                          {experience.description}
+                        </PdfText>
+                      </View>
+                    )}
                   </View>
 
                   {/* Key Responsibilities */}
@@ -295,15 +304,6 @@ export default function ModernLayout() {
                             </View>
                           ))}
                         </View>
-                      </View>
-                    )}
-
-                  {/* General Description (fallback) */}
-                  {experience.description &&
-                    !experience.responsibilities?.length &&
-                    !experience.achievements?.length && (
-                      <View style={{ marginTop: 8 }}>
-                        {renderBulletPoints(experience.description)}
                       </View>
                     )}
                 </View>
