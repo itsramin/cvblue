@@ -1,82 +1,43 @@
-import React, { useEffect, useRef, useState } from "react";
-import { PlusOutlined } from "@ant-design/icons";
-import type { InputRef } from "antd";
-import { Button, Flex, Input, Tag } from "antd";
+import React, { useEffect, useState } from "react";
 import { useData } from "@/store/store";
+import EditableList from "../EditableList";
 
-const tagInputStyle: React.CSSProperties = {
-  width: 120,
-  marginInlineEnd: 8,
-  verticalAlign: "top",
-};
+interface EditableItem {
+  id: string;
+  content: string;
+  isEditing: boolean;
+}
 
 const Skills: React.FC = () => {
-  const [enteredSkills, setEnteredSkills] = useState<string[]>([]);
-  const [inputVisible, setInputVisible] = useState(false);
-  const [inputValue, setInputValue] = useState("");
   const { updateSkills, skills } = useData();
-
-  const inputRef = useRef<InputRef>(null);
-
-  useEffect(() => {
-    if (inputVisible) {
-      inputRef.current?.focus();
-    }
-  }, [inputVisible]);
+  const [items, setItems] = useState<EditableItem[]>([]);
 
   useEffect(() => {
-    setEnteredSkills(skills);
+    const initialItems = skills.map((skill, index) => ({
+      id: `skill-${index}`,
+      content: skill,
+      isEditing: false,
+    }));
+    setItems(initialItems);
   }, []);
 
-  const handleClose = (removedTag: string) => {
-    const newSkill = enteredSkills.filter((tag) => tag !== removedTag);
+  useEffect(() => {
+    const skillContents = items.map((item) => item.content);
+    updateSkills(skillContents);
+  }, [items, updateSkills]);
 
-    setEnteredSkills(newSkill);
-    updateSkills(newSkill);
-  };
-
-  const showInput = () => {
-    setInputVisible(true);
-  };
-
-  const handleInputConfirm = () => {
-    if (inputValue && !enteredSkills.includes(inputValue)) {
-      setEnteredSkills([...enteredSkills, inputValue]);
-      updateSkills([...enteredSkills, inputValue]);
-    }
-    setInputVisible(false);
-    setInputValue("");
+  const handleItemsChange = (newItems: EditableItem[]) => {
+    setItems(newItems);
   };
 
   return (
-    <Flex gap="4px" align="center" wrap>
-      {enteredSkills.map((tag) => (
-        <Tag
-          color="blue"
-          key={tag}
-          closable
-          style={{ userSelect: "none" }}
-          onClose={() => handleClose(tag)}
-        >
-          <span>{tag}</span>
-        </Tag>
-      ))}
-      {inputVisible ? (
-        <Input
-          ref={inputRef}
-          type="text"
-          style={tagInputStyle}
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-          onBlur={handleInputConfirm}
-          onPressEnter={handleInputConfirm}
-        />
-      ) : (
-        <Button icon={<PlusOutlined />} onClick={showInput}>
-          New Skill
-        </Button>
-      )}
-    </Flex>
+    <EditableList
+      canReorder
+      items={items}
+      onItemsChange={handleItemsChange}
+      placeholder="Add a skill..."
+      label="Skills"
+    />
   );
 };
 
