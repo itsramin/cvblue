@@ -1,4 +1,10 @@
-import { IEducation, IExperience, IPersonalInfo, ISkills } from "@/type/type";
+import {
+  IEducation,
+  IExperience,
+  ILanguage,
+  IPersonalInfo,
+  ISkills,
+} from "@/type/type";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 
@@ -27,6 +33,10 @@ interface UserDataState {
   ////// skills
   skills: ISkills;
   updateSkills: (data: ISkills) => void;
+
+  ///// languages
+  languages: ILanguage[];
+  updateLanguages: (data: ILanguage[]) => void;
 }
 
 const initialPersonalInfo: IPersonalInfo = {
@@ -85,6 +95,10 @@ export const useData = create<UserDataState>()(
       //// skills
       skills: [],
       updateSkills: (data) => set(() => ({ skills: data })),
+
+      ////// languages
+      languages: [],
+      updateLanguages: (data) => set(() => ({ languages: data })),
     }),
 
     {

@@ -32,6 +32,12 @@ export interface IEducation {
 }
 export type ISkills = string[];
 
+export interface ILanguage {
+  id: number;
+  name: string;
+  level: number;
+}
+
 export interface IStyleOptions {
   fontFamily: string;
   fontSize: number;

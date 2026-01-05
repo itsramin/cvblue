@@ -1,19 +1,19 @@
 "use client";
-import { useData } from "@/store/store";
-import { IData } from "@/type/type";
-import { Form, Collapse, FormListFieldData } from "antd";
-import { useEffect, useState } from "react";
+
+import { Collapse } from "antd";
+import { useState } from "react";
 import PersonalInfo from "./formSections/Personal";
 import WorkExperience from "./formSections/WorkExperience";
 import Education from "./formSections/Education";
 import Skills from "./formSections/Skills";
 import Certifications from "./formSections/Certifications";
+import Languages from "./formSections/Languages";
 
 export default function Main() {
   // const { data, updateField } = useData();
 
   // const [form] = Form.useForm();
-  const [activeKeys, setActiveKeys] = useState<string[]>(["experience"]);
+  const [activeKeys, setActiveKeys] = useState<string[]>(["languages"]);
 
   // useEffect(() => {
   //   if (data) {
@@ -52,6 +52,11 @@ export default function Main() {
       key: "skills",
       label: "Skills",
       children: <Skills />,
+    },
+    {
+      key: "languages",
+      label: "Languages",
+      children: <Languages />,
     },
     // {
     //   key: "certifications",
