@@ -15,6 +15,7 @@ import {
   Space,
   Tag,
   InputNumber,
+  Modal,
 } from "antd";
 import {
   DeleteOutlined,
@@ -44,6 +45,7 @@ export default function Education() {
     }[]
   >([]);
   const [isCurrent, setIsCurrent] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
     // Sort educations by date (newer first)
@@ -130,6 +132,8 @@ export default function Education() {
     form.resetFields();
     setStatus("");
     setEditingId(null);
+    setModalOpen(false);
+    setIsCurrent(false);
   };
 
   const handleEdit = (id: string) => {
@@ -137,6 +141,7 @@ export default function Education() {
     if (education) {
       setEditingId(id);
       setStatus("edit");
+      setIsCurrent(education.current);
 
       form.setFieldsValue({
         degree: education.degree,
@@ -150,6 +155,8 @@ export default function Education() {
         endDate: education.endDate ? dayjs(education.endDate, "YYYY-MM") : null,
         current: education.current,
       });
+
+      setModalOpen(true);
     }
   };
 
@@ -157,6 +164,16 @@ export default function Education() {
     form.resetFields();
     setStatus("");
     setEditingId(null);
+    setModalOpen(false);
+    setIsCurrent(false);
+  };
+
+  const handleNewEducation = () => {
+    form.resetFields();
+    setEditingId(null);
+    setStatus("new");
+    setIsCurrent(false);
+    setModalOpen(true);
   };
 
   return (
@@ -192,16 +209,29 @@ export default function Education() {
         </Card>
       ))}
 
-      {(status === "new" || status === "edit") && (
-        <Form form={form} onFinish={submitHandler}>
-          <div className="flex justify-between items-center mb-6">
-            <Text strong className="text-lg">
-              {status === "edit" ? "Edit Education" : "Add New Education"}
-            </Text>
-          </div>
-
+      {/* Education Form Modal */}
+      <Modal
+        title={status === "edit" ? "Edit Education" : "Add New Education"}
+        open={modalOpen}
+        onCancel={handleCancel}
+        footer={[
+          <Button key="cancel" onClick={handleCancel}>
+            Cancel
+          </Button>,
+          <Button
+            key="submit"
+            type="primary"
+            icon={<SaveOutlined />}
+            onClick={() => form.submit()}
+          >
+            {status === "edit" ? "Update" : "Save"}
+          </Button>,
+        ]}
+        width={800}
+      >
+        <Form form={form} onFinish={submitHandler} layout="vertical">
           <Row gutter={[20, 16]}>
-            {/* Degree - Full width for better visibility */}
+            {/* Degree */}
             <Col span={12}>
               <Item
                 name="degree"
@@ -212,7 +242,7 @@ export default function Education() {
               </Item>
             </Col>
 
-            {/* Institution - Full width */}
+            {/* Institution */}
             <Col span={12}>
               <Item
                 name="institution"
@@ -223,7 +253,7 @@ export default function Education() {
               </Item>
             </Col>
 
-            {/* Field of Study - Full width */}
+            {/* Field of Study */}
             <Col span={12}>
               <Item
                 name="field"
@@ -234,7 +264,7 @@ export default function Education() {
               </Item>
             </Col>
 
-            {/* GPA - Full width on mobile, half on desktop */}
+            {/* GPA */}
             <Col xs={24} sm={12} lg={8}>
               <Item name="gpa" label="GPA">
                 <InputNumber
@@ -310,7 +340,7 @@ export default function Education() {
               </Col>
             )}
 
-            {/* Description - Full width */}
+            {/* Description */}
             <Col span={24}>
               <Item
                 name="description"
@@ -330,40 +360,19 @@ export default function Education() {
                 />
               </Item>
             </Col>
-
-            {/* Buttons */}
-            <Col span={24}>
-              <div className="flex items-center justify-center gap-x-4">
-                <Button
-                  icon={<SaveOutlined />}
-                  htmlType="submit"
-                  type="primary"
-                >
-                  {status === "edit" ? "Update" : "Save"}
-                </Button>
-                <Button onClick={handleCancel} type="default">
-                  Cancel
-                </Button>
-              </div>
-            </Col>
           </Row>
         </Form>
-      )}
+      </Modal>
 
-      {status === "" && (
-        <Button
-          icon={<PlusOutlined />}
-          onClick={() => {
-            form.resetFields();
-            setEditingId(null);
-            setStatus("new");
-          }}
-          className="mx-auto"
-          type="primary"
-        >
-          New Education
-        </Button>
-      )}
+      {/* New Education Button */}
+      <Button
+        icon={<PlusOutlined />}
+        onClick={handleNewEducation}
+        className="mx-auto"
+        type="primary"
+      >
+        New Education
+      </Button>
     </div>
   );
 }
