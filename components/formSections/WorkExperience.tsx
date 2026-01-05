@@ -14,6 +14,7 @@ import {
   Descriptions,
   Space,
   Tag,
+  Modal,
 } from "antd";
 import {
   DeleteOutlined,
@@ -23,15 +24,23 @@ import {
 } from "@ant-design/icons";
 import React, { useEffect, useState } from "react";
 import dayjs from "dayjs";
+import EditableList from "../EditableList";
 
 const { Item } = Form;
 const { TextArea } = Input;
 const { Text } = Typography;
 
+interface EditableItem {
+  id: string;
+  content: string;
+  isEditing: boolean;
+}
+
 export default function WorkExperience() {
   const { addExperience, experiences, removeExperience, updateExperience } =
     useData();
-  const [status, setStatus] = useState<"new" | "edit" | "">("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalTitle, setModalTitle] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form] = Form.useForm();
   const [convertedData, setConvertedData] = useState<
@@ -43,19 +52,18 @@ export default function WorkExperience() {
     }[]
   >([]);
   const [isCurrent, setIsCurrent] = useState(false);
+  const [responsibilities, setResponsibilities] = useState<EditableItem[]>([]);
+  const [achievements, setAchievements] = useState<EditableItem[]>([]);
 
   useEffect(() => {
     // Sort experiences by date (newer first)
     const sortedExperiences = [...experiences].sort((a, b) => {
-      // Handle current positions (ongoing) - they should be first
       if (a.current && !b.current) return -1;
       if (!a.current && b.current) return 1;
 
-      // For end dates, use endDate if available, otherwise use startDate
       const dateA = a.current ? a.startDate : a.endDate || a.startDate;
       const dateB = b.current ? b.startDate : b.endDate || b.startDate;
 
-      // Compare in descending order (newer first)
       return dayjs(dateB, "YYYY-MM").diff(dayjs(dateA, "YYYY-MM"));
     });
 
@@ -84,7 +92,36 @@ export default function WorkExperience() {
           label: e.current ? "" : "End Date",
           children: e.current ? <Tag color="green">Working</Tag> : e.endDate,
         },
-
+        {
+          key: "responsibilities",
+          label: "Responsibilities",
+          children:
+            e.responsibilities && e.responsibilities.length > 0 ? (
+              <ul className="list-disc pl-4">
+                {e.responsibilities.map((resp, idx) => (
+                  <li key={idx}>{resp}</li>
+                ))}
+              </ul>
+            ) : (
+              "N/A"
+            ),
+          span: { xs: 1, sm: 2, md: 3, lg: 3, xl: 2, xxl: 2 },
+        },
+        {
+          key: "achievements",
+          label: "Achievements",
+          children:
+            e.achievements && e.achievements.length > 0 ? (
+              <ul className="list-disc pl-4">
+                {e.achievements.map((ach, idx) => (
+                  <li key={idx}>{ach}</li>
+                ))}
+              </ul>
+            ) : (
+              "N/A"
+            ),
+          span: { xs: 1, sm: 2, md: 3, lg: 3, xl: 2, xxl: 2 },
+        },
         {
           key: "description",
           label: "Description",
@@ -97,33 +134,77 @@ export default function WorkExperience() {
     setConvertedData(converted);
   }, [experiences]);
 
+  const showModal = (mode: "add" | "edit", id?: string) => {
+    if (mode === "edit" && id) {
+      setModalTitle("Edit Experience");
+      setEditingId(id);
+      handleEdit(id);
+    } else {
+      setModalTitle("Add New Experience");
+      setEditingId(null);
+      resetForm();
+    }
+    setIsModalOpen(true);
+  };
+
+  const handleCancelModal = () => {
+    setIsModalOpen(false);
+    resetForm();
+    form.resetFields();
+  };
+
+  const resetForm = () => {
+    setResponsibilities([]);
+    setAchievements([]);
+    setIsCurrent(false);
+    setEditingId(null);
+  };
+
   const submitHandler = (values: any) => {
     const newEx = {
       id: editingId || Date.now().toString(),
       company: values.company,
       position: values.position,
       description: values.description,
+      achievements: achievements.map((item) => item.content),
+      responsibilities: responsibilities.map((item) => item.content),
       startDate: values.startDate.format("YYYY-MM"),
       endDate: values.current ? "" : values.endDate?.format("YYYY-MM") || "",
       current: values.current,
     };
 
-    if (status === "edit" && editingId) {
+    if (editingId) {
       updateExperience(editingId, newEx);
     } else {
       addExperience(newEx);
     }
 
-    form.resetFields();
-    setStatus("");
-    setEditingId(null);
+    handleCancelModal();
   };
 
   const handleEdit = (id: string) => {
     const experience = experiences.find((exp) => exp.id === id);
     if (experience) {
       setEditingId(id);
-      setStatus("edit");
+
+      const responsibilityItems: EditableItem[] =
+        experience.responsibilities.map((item, index) => ({
+          id: `resp-${Date.now()}-${index}`,
+          content: item,
+          isEditing: false,
+        }));
+
+      const achievementItems: EditableItem[] = experience.achievements.map(
+        (item, index) => ({
+          id: `achieve-${Date.now()}-${index}`,
+          content: item,
+          isEditing: false,
+        })
+      );
+
+      setResponsibilities(responsibilityItems);
+      setAchievements(achievementItems);
+      setIsCurrent(experience.current);
 
       form.setFieldsValue({
         company: experience.company,
@@ -140,12 +221,6 @@ export default function WorkExperience() {
     }
   };
 
-  const handleCancel = () => {
-    form.resetFields();
-    setStatus("");
-    setEditingId(null);
-  };
-
   return (
     <div className="flex flex-col gap-y-6">
       {convertedData.map((item) => (
@@ -158,7 +233,7 @@ export default function WorkExperience() {
               <Button
                 type="text"
                 icon={<EditOutlined />}
-                onClick={() => handleEdit(item.id)}
+                onClick={() => showModal("edit", item.id)}
                 size="small"
               />
               <Button
@@ -179,13 +254,23 @@ export default function WorkExperience() {
         </Card>
       ))}
 
-      {(status === "new" || status === "edit") && (
-        <Form form={form} onFinish={submitHandler}>
-          <div className="flex justify-between items-center mb-4">
-            <Text strong>
-              {status === "edit" ? "Edit Experience" : "Add New Experience"}
-            </Text>
-          </div>
+      <Button
+        icon={<PlusOutlined />}
+        onClick={() => showModal("add")}
+        className="mx-auto"
+        type="primary"
+      >
+        New experience
+      </Button>
+
+      <Modal
+        title={modalTitle}
+        open={isModalOpen}
+        onCancel={handleCancelModal}
+        footer={null}
+        width={800}
+      >
+        <Form form={form} onFinish={submitHandler} layout="vertical">
           <Row gutter={[16, 16]}>
             <Col span={12}>
               <Item
@@ -219,11 +304,13 @@ export default function WorkExperience() {
               </Item>
             </Col>
 
-            <Col span={4}>
+            <Col span={8}>
               <Item
                 name="current"
                 label="Current Position"
                 valuePropName="checked"
+                layout="horizontal"
+                className="!bottom-0 absolute "
               >
                 <Switch
                   onChange={(checked) => {
@@ -261,6 +348,27 @@ export default function WorkExperience() {
                 </Item>
               </Col>
             )}
+
+            {/* Responsibilities Section */}
+            <Col span={24}>
+              <EditableList
+                items={responsibilities}
+                onItemsChange={setResponsibilities}
+                placeholder="Add a responsibility..."
+                label="Key Responsibilities"
+              />
+            </Col>
+
+            {/* Achievements Section */}
+            <Col span={24}>
+              <EditableList
+                items={achievements}
+                onItemsChange={setAchievements}
+                placeholder="Add an achievement..."
+                label="Key Achievements"
+              />
+            </Col>
+
             <Col span={24}>
               <Item
                 name="description"
@@ -281,31 +389,16 @@ export default function WorkExperience() {
               </Item>
             </Col>
           </Row>
-          <div className="flex items-center justify-center gap-x-4">
-            <Button icon={<SaveOutlined />} htmlType="submit" type="primary">
-              {status === "edit" ? "Update" : "Save"}
-            </Button>
-            <Button onClick={handleCancel} type="default">
+          <div className="flex items-center justify-end gap-x-4 pt-4 ">
+            <Button onClick={handleCancelModal} type="default">
               Cancel
+            </Button>
+            <Button icon={<SaveOutlined />} htmlType="submit" type="primary">
+              {editingId ? "Update" : "Save"}
             </Button>
           </div>
         </Form>
-      )}
-
-      {status === "" && (
-        <Button
-          icon={<PlusOutlined />}
-          onClick={() => {
-            form.resetFields();
-            setEditingId(null);
-            setStatus("new");
-          }}
-          className="mx-auto"
-          type="primary"
-        >
-          New experience
-        </Button>
-      )}
+      </Modal>
     </div>
   );
 }

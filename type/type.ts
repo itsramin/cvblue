@@ -18,6 +18,8 @@ export interface IExperience {
   endDate: string;
   current: boolean;
   description: string;
+  responsibilities: string[];
+  achievements: string[];
 }
 export interface IEducation {
   id: string;
