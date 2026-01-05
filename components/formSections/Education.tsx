@@ -28,7 +28,6 @@ import dayjs from "dayjs";
 
 const { Item } = Form;
 const { TextArea } = Input;
-const { Text } = Typography;
 
 export default function Education() {
   const { addEducation, educations, removeEducation, updateEducation } =

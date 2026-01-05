@@ -3,6 +3,7 @@ import {
   IExperience,
   ILanguage,
   IPersonalInfo,
+  IProject,
   ISkills,
 } from "@/type/type";
 import { create } from "zustand";
@@ -37,6 +38,12 @@ interface UserDataState {
   ///// languages
   languages: ILanguage[];
   updateLanguages: (data: ILanguage[]) => void;
+
+  //// Projects
+  projects: IProject[];
+  addProject: (data: IProject) => void;
+  removeProject: (id: string) => void;
+  updateProject: (id: string, data: Partial<IProject>) => void;
 }
 
 const initialPersonalInfo: IPersonalInfo = {
@@ -99,6 +106,21 @@ export const useData = create<UserDataState>()(
       ////// languages
       languages: [],
       updateLanguages: (data) => set(() => ({ languages: data })),
+
+      ////// projects
+      projects: [],
+      addProject: (data) =>
+        set((state) => ({ projects: [...state.projects, data] })),
+      removeProject: (id) =>
+        set((state) => ({
+          projects: [...state.projects.filter((proj) => proj.id !== id)],
+        })),
+      updateProject: (id, data) =>
+        set((state) => ({
+          projects: state.projects.map((proj) =>
+            proj.id === id ? { ...proj, ...data } : proj
+          ),
+        })),
     }),
 
     {

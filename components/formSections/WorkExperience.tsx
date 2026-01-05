@@ -25,16 +25,10 @@ import {
 import React, { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import EditableList from "../EditableList";
+import { EditableItem } from "@/type/type";
 
 const { Item } = Form;
 const { TextArea } = Input;
-const { Text } = Typography;
-
-interface EditableItem {
-  id: string;
-  content: string;
-  isEditing: boolean;
-}
 
 export default function WorkExperience() {
   const { addExperience, experiences, removeExperience, updateExperience } =

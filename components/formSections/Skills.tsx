@@ -1,12 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useData } from "@/store/store";
 import EditableList from "../EditableList";
-
-interface EditableItem {
-  id: string;
-  content: string;
-  isEditing: boolean;
-}
+import { EditableItem } from "@/type/type";
 
 const Skills: React.FC = () => {
   const { updateSkills, skills } = useData();

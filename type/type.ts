@@ -40,11 +40,28 @@ export interface ILanguage {
   level: number;
 }
 
+export interface IProject {
+  id: string;
+  name: string;
+  description: string;
+  role?: string;
+  technologies?: string[];
+  link?: string;
+  date: string;
+  images?: string[];
+}
+
 export interface IStyleOptions {
   fontFamily: string;
   fontSize: number;
   primaryColor: string;
   secondaryColor: string;
+}
+
+export interface EditableItem {
+  id: string;
+  content: string;
+  isEditing: boolean;
 }
 
 export interface IData {

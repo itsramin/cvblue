@@ -11,14 +11,9 @@ import {
   UpOutlined,
   DownOutlined,
 } from "@ant-design/icons";
+import { EditableItem } from "@/type/type";
 
 const { Text } = Typography;
-
-interface EditableItem {
-  id: string;
-  content: string;
-  isEditing: boolean;
-}
 
 interface EditableListProps {
   items: EditableItem[];

@@ -8,12 +8,13 @@ import Education from "./formSections/Education";
 import Skills from "./formSections/Skills";
 import Certifications from "./formSections/Certifications";
 import Languages from "./formSections/Languages";
+import Projects from "./formSections/Projects";
 
 export default function Main() {
   // const { data, updateField } = useData();
 
   // const [form] = Form.useForm();
-  const [activeKeys, setActiveKeys] = useState<string[]>(["languages"]);
+  const [activeKeys, setActiveKeys] = useState<string[]>(["projects"]);
 
   // useEffect(() => {
   //   if (data) {
@@ -57,6 +58,11 @@ export default function Main() {
       key: "languages",
       label: "Languages",
       children: <Languages />,
+    },
+    {
+      key: "projects",
+      label: "Projects",
+      children: <Projects />,
     },
     // {
     //   key: "certifications",
