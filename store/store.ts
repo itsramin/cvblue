@@ -53,7 +53,7 @@ const initialPersonalInfo: IPersonalInfo = {
   title: "",
   location: "",
   linkedin: "",
-  links: [""],
+  links: [{ url: "", title: "" }],
   aboutMe: "",
 };
 

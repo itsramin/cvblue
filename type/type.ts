@@ -1,5 +1,10 @@
 import { NamePath } from "antd/es/form/interface";
 
+export interface ILink {
+  url: string;
+  title: string;
+}
+
 export interface IPersonalInfo {
   name: string;
   email: string;
@@ -7,7 +12,7 @@ export interface IPersonalInfo {
   title: string;
   location: string;
   linkedin: string;
-  links: string[];
+  links: ILink[];
   aboutMe: string;
 }
 export interface IExperience {

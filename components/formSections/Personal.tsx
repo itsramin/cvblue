@@ -14,17 +14,25 @@ export default function PersonalInfo() {
   const { personalInfo, updatePersonalInfo, hasHydrated } = useData();
 
   useEffect(() => {
-    // Ensure we initialize with proper structure if link is a string
+    // Ensure we initialize with proper structure for links array
+    const links = personalInfo.links || [];
+    const formattedLinks = Array.isArray(links)
+      ? links.map((link) => {
+          // Handle both string and object formats for backward compatibility
+          if (typeof link === "string") {
+            return { url: link, title: "" };
+          }
+          return link;
+        })
+      : [{ url: links, title: "" }];
+
     const formValues = {
       ...personalInfo,
-      links: Array.isArray(personalInfo.links)
-        ? personalInfo.links
-        : personalInfo.links
-        ? [personalInfo.links]
-        : [""],
+      links:
+        formattedLinks.length > 0 ? formattedLinks : [{ url: "", title: "" }],
     };
     form.setFieldsValue(formValues);
-  }, [hasHydrated]);
+  }, [hasHydrated, form, personalInfo]);
 
   const debouncedUpdate = debounce((field: string, value: any) => {
     updatePersonalInfo(field as keyof typeof personalInfo, value);
@@ -36,8 +44,7 @@ export default function PersonalInfo() {
 
       // Handle the special case for links array
       if (name[0] === "links") {
-        const linksValue =
-          name.length === 1 ? value : form.getFieldValue("links");
+        const linksValue = form.getFieldValue("links") || [];
         debouncedUpdate("links", linksValue);
       } else {
         debouncedUpdate(name[0], value);
@@ -112,16 +119,39 @@ export default function PersonalInfo() {
                       }}
                       align="baseline"
                     >
-                      <Item {...restField} name={name} style={{ flex: 1 }}>
+                      <Item
+                        {...restField}
+                        name={[name, "title"]}
+                        style={{ flex: 1 }}
+                        rules={[
+                          { required: true, message: "Title is required" },
+                        ]}
+                      >
+                        <Input placeholder="Link Title (e.g., Portfolio, GitHub)" />
+                      </Item>
+                      <Item
+                        {...restField}
+                        name={[name, "url"]}
+                        style={{ flex: 2 }}
+                        rules={[
+                          { required: true, message: "URL is required" },
+                          { type: "url", message: "Please enter a valid URL" },
+                        ]}
+                      >
                         <Input placeholder="https://example.com" />
                       </Item>
-                      <MinusCircleOutlined onClick={() => remove(name)} />
+                      {fields.length > 1 && (
+                        <MinusCircleOutlined
+                          onClick={() => remove(name)}
+                          style={{ color: "#ff4d4f" }}
+                        />
+                      )}
                     </Space>
                   ))}
                   <Item>
                     <Button
                       type="dashed"
-                      onClick={() => add()}
+                      onClick={() => add({ url: "", title: "" })}
                       block
                       icon={<PlusOutlined />}
                     >

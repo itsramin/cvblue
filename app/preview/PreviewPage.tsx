@@ -24,8 +24,8 @@ const { Content, Sider } = Layout;
 
 import { PDFDownloadLink, PDFViewer } from "@react-pdf/renderer";
 import { IStyleOptions } from "@/type/type";
-import CVPDFDocument from "./CVPDFDocument";
-import ModernLayout from "./ModernLayout";
+import ClassicLayout from "../../components/layouts/classis/ClassicLayout";
+import ModernLayout from "../../components/layouts/modern/ModernLayout";
 
 export default function PreviewPage() {
   const { personalInfo } = useData();
@@ -43,12 +43,12 @@ export default function PreviewPage() {
     {
       value: "classic",
       label: "Classic",
-      layout: <CVPDFDocument styleOptions={styleOptions} />,
+      layout: <ClassicLayout />,
     },
     {
       value: "modern",
       label: "Modern",
-      layout: <ModernLayout styleOptions={styleOptions} />,
+      layout: <ModernLayout />,
     },
   ];
 
@@ -88,7 +88,7 @@ export default function PreviewPage() {
                 />
               </Card>
 
-              <Card title="Colors">
+              {/* <Card title="Colors">
                 <Space direction="vertical" size="middle" className="w-full">
                   <Space direction="vertical" size="middle" className="w-full">
                     <Text strong>Primary Color</Text>
@@ -113,7 +113,7 @@ export default function PreviewPage() {
                     />
                   </Space>
                 </Space>
-              </Card>
+              </Card> */}
             </Space>
           </div>
         </Sider>
@@ -131,7 +131,10 @@ export default function PreviewPage() {
                   }
                   extra={
                     <PDFDownloadLink
-                      document={<CVPDFDocument styleOptions={styleOptions} />}
+                      document={
+                        layouts.find((l) => l.value === activeLayout)
+                          ?.layout || <ClassicLayout />
+                      }
                       fileName={getFilename()}
                     >
                       {({ loading }) => (
@@ -161,142 +164,3 @@ export default function PreviewPage() {
     </>
   );
 }
-
-// <div className="w-full max-w-4xl">
-//                     <div
-//                       id="cv-preview"
-//                       className="bg-white p-8 rounded-lg shadow-md"
-//                       style={{
-//                         fontFamily: styleOptions.fontFamily,
-//                         fontSize: `${styleOptions.fontSize}px`,
-//                       }}
-//                     >
-//                       {/* Header Section */}
-//                       <div
-//                         className="text-center mb-8 pb-8"
-//                         style={{
-//                           borderBottom: `2px solid ${styleOptions.secondaryColor}`,
-//                         }}
-//                       >
-//                         <Title
-//                           level={1}
-//                           style={{
-//                             color: styleOptions.primaryColor,
-//                             marginBottom: "8px",
-//                           }}
-//                         >
-//                           {personalInfo.name || "Your Name"}
-//                         </Title>
-//                         <Title
-//                           level={3}
-//                           style={{
-//                             color: styleOptions.secondaryColor,
-//                             marginBottom: "16px",
-//                           }}
-//                         >
-//                           {personalInfo.title || "Your Professional Title"}
-//                         </Title>
-//                         <Space size="large">
-//                           <Space>
-//                             <MailOutlined
-//                               style={{ color: styleOptions.primaryColor }}
-//                             />
-//                             <Text strong>
-//                               {personalInfo.email || "your.email@example.com"}
-//                             </Text>
-//                           </Space>
-//                           <Space>
-//                             <UserOutlined
-//                               style={{ color: styleOptions.primaryColor }}
-//                             />
-//                             <Text strong>Contact Info Here</Text>
-//                           </Space>
-//                         </Space>
-//                       </div>
-
-//                       {/* About Me Section */}
-//                       {personalInfo.aboutMe && (
-//                         <div className="mb-8">
-//                           <Title level={2} className="flex items-center mb-4">
-//                             <ProfileOutlined className="mr-2" />
-//                             About Me
-//                           </Title>
-//                           <Paragraph
-//                             style={{ fontSize: `${styleOptions.fontSize}px` }}
-//                           >
-//                             {personalInfo.aboutMe}
-//                           </Paragraph>
-//                         </div>
-//                       )}
-
-//                       {/* Experience Section */}
-//                       <div className="mb-8">
-//                         <Title level={2} className="flex items-center mb-4">
-//                           <ExperimentOutlined className="mr-2" />
-//                           Work Experience
-//                         </Title>
-//                         <div>
-//                           {experiences.map((e) => (
-//                             <Card key={e.id} className="mb-4">
-//                               <Title level={4}>{e.company}</Title>
-//                               <Text type="secondary">
-//                                 <span>{e.position}</span> • {e.startDate} -{" "}
-//                                 {e.current ? "Present" : e.endDate}
-//                               </Text>
-//                               {e.description && (
-//                                 <Paragraph>{e.description}</Paragraph>
-//                               )}
-//                             </Card>
-//                           ))}
-//                         </div>
-//                       </div>
-
-//                       {/* Education Section */}
-//                       <div className="mb-8">
-//                         <Title level={2} className="flex items-center mb-4">
-//                           <BookOutlined className="mr-2" />
-//                           Education
-//                         </Title>
-//                         <Row gutter={[16, 16]}>
-//                           <Col span={12}>
-//                             <Card size="small">
-//                               <Title level={4}>Computer Science</Title>
-//                               <Text strong>University Name</Text>
-//                               <br />
-//                               <Text type="secondary">
-//                                 Bachelor's Degree • 2014 - 2018
-//                               </Text>
-//                             </Card>
-//                           </Col>
-//                           <Col span={12}>
-//                             <Card size="small">
-//                               <Title level={4}>Web Development</Title>
-//                               <Text strong>Coding Bootcamp</Text>
-//                               <br />
-//                               <Text type="secondary">
-//                                 Certification • 2018
-//                               </Text>
-//                             </Card>
-//                           </Col>
-//                         </Row>
-//                       </div>
-
-//                       {/* Skills Section */}
-//                       <div>
-//                         <Title level={2} className="flex items-center mb-4">
-//                           <BulbOutlined className="mr-2" />
-//                           Skills
-//                         </Title>
-//                         <Space size={[8, 16]} wrap>
-//                           <Tag color="blue">React</Tag>
-//                           <Tag color="blue">TypeScript</Tag>
-//                           <Tag color="green">Ant Design</Tag>
-//                           <Tag color="green">Tailwind CSS</Tag>
-//                           <Tag color="orange">Node.js</Tag>
-//                           <Tag color="orange">MongoDB</Tag>
-//                           <Tag color="purple">Git</Tag>
-//                           <Tag color="purple">AWS</Tag>
-//                         </Space>
-//                       </div>
-//                     </div>
-//                   </div>
