@@ -43,15 +43,15 @@ export default function RootLayout({
       <body className={`${vazir.className} antialiased`}>
         <AntdRegistry>
           <ConfigProvider
-            // direction="rtl"
-            theme={{ token: { fontFamily: vazir.style.fontFamily } }}
+          // direction="rtl"
+          // theme={{ token: { fontFamily: vazir.style.fontFamily } }}
           >
             <App>
               <div
                 // style={{ direction: "rtl" }}
                 className="select-none md:select-auto"
               >
-                <Header />
+                {/* <Header /> */}
                 {children}
               </div>
             </App>

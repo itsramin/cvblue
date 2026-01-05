@@ -1,7 +1,7 @@
 "use client";
 
 import { useData } from "@/store/store";
-import { Form, Input, Row, Col, Button, Space } from "antd";
+import { Form, Input, Row, Col, Button, Space, Skeleton } from "antd";
 import { useEffect } from "react";
 import { debounce } from "lodash";
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
@@ -38,7 +38,7 @@ export default function PersonalInfo() {
     updatePersonalInfo(field as keyof typeof personalInfo, value);
   }, 300);
 
-  function fieldHandler(changedFields: any[], allFields: any[]) {
+  function fieldHandler(changedFields: any[], _allFields: any[]) {
     if (changedFields.length > 0) {
       const { name, value } = changedFields[0];
 
@@ -51,25 +51,20 @@ export default function PersonalInfo() {
       }
     }
   }
+  if (!hasHydrated) {
+    return <Skeleton />;
+  }
 
   return (
     <Form form={form} onFieldsChange={fieldHandler}>
       <Row gutter={[16, 16]}>
         <Col span={12}>
-          <Item
-            label="Full Name"
-            name="name"
-            rules={[{ required: true, message: "Please enter your name" }]}
-          >
+          <Item label="Full Name" name="name">
             <Input placeholder="John Doe" />
           </Item>
         </Col>
         <Col span={12}>
-          <Item
-            label="Professional Title"
-            name="title"
-            rules={[{ required: true, message: "Please enter your title" }]}
-          >
+          <Item label="Professional Title" name="title">
             <Input placeholder="Senior Software Engineer" />
           </Item>
         </Col>
@@ -79,7 +74,7 @@ export default function PersonalInfo() {
             name="email"
             rules={[
               {
-                required: true,
+                required: false,
                 type: "email",
                 message: "Please enter a valid email",
               },

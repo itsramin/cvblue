@@ -81,9 +81,15 @@ export default function WorkExperience() {
           children: e.startDate,
         },
         {
-          key: "ndDate",
+          key: "endDate",
           label: e.current ? "" : "End Date",
           children: e.current ? <Tag color="green">Working</Tag> : e.endDate,
+        },
+        {
+          key: "description",
+          label: "Description",
+          children: e.description,
+          span: { xs: 4, sm: 4, md: 4, lg: 4, xl: 4, xxl: 4 },
         },
         {
           key: "responsibilities",
@@ -96,7 +102,7 @@ export default function WorkExperience() {
                 ))}
               </ul>
             ) : (
-              "N/A"
+              ""
             ),
           span: { xs: 1, sm: 2, md: 3, lg: 3, xl: 2, xxl: 2 },
         },
@@ -111,14 +117,8 @@ export default function WorkExperience() {
                 ))}
               </ul>
             ) : (
-              "N/A"
+              ""
             ),
-          span: { xs: 1, sm: 2, md: 3, lg: 3, xl: 2, xxl: 2 },
-        },
-        {
-          key: "description",
-          label: "Description",
-          children: e.description,
           span: { xs: 1, sm: 2, md: 3, lg: 3, xl: 2, xxl: 2 },
         },
       ],

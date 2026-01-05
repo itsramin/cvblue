@@ -2,17 +2,7 @@
 
 import { useData } from "@/store/store";
 import { useState } from "react";
-import {
-  Card,
-  Row,
-  Col,
-  Typography,
-  ColorPicker,
-  Button,
-  Space,
-  Layout,
-  Radio,
-} from "antd";
+import { Card, Row, Col, Typography, Button, Space, Layout, Radio } from "antd";
 import {
   DownloadOutlined,
   EyeOutlined,
@@ -23,21 +13,13 @@ const { Title, Text } = Typography;
 const { Content, Sider } = Layout;
 
 import { PDFDownloadLink, PDFViewer } from "@react-pdf/renderer";
-import { IStyleOptions } from "@/type/type";
 import ClassicLayout from "../../components/layouts/classis/ClassicLayout";
 import ModernLayout from "../../components/layouts/modern/ModernLayout";
+import Header from "@/components/Header";
 
 export default function PreviewPage() {
   const { personalInfo } = useData();
   const [activeLayout, setActiveLayout] = useState("classic");
-
-  // Style options state
-  const [styleOptions, setStyleOptions] = useState<IStyleOptions>({
-    fontFamily: "Helvetica",
-    fontSize: 12,
-    primaryColor: "#1890ff",
-    secondaryColor: "#52c41a",
-  });
 
   const layouts = [
     {
@@ -52,11 +34,6 @@ export default function PreviewPage() {
     },
   ];
 
-  // Handle style change
-  const handleStyleChange = (key: keyof IStyleOptions, value: any) => {
-    setStyleOptions((prev) => ({ ...prev, [key]: value }));
-  };
-
   // Generate filename
   const getFilename = () => {
     return `${personalInfo.name || "cv"}_${new Date().toLocaleString()}.pdf`;
@@ -64,6 +41,7 @@ export default function PreviewPage() {
 
   return (
     <>
+      <Header />
       <Layout className="min-h-screen">
         <Sider
           width={320}
