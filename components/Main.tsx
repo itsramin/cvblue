@@ -11,7 +11,6 @@ import {
   StarOutlined,
 } from "@ant-design/icons";
 import Link from "next/link";
-import Header from "./Header";
 
 const { Step } = Steps;
 
@@ -67,7 +66,6 @@ export default function Main() {
 
   return (
     <div className="min-h-screen">
-      <Header />
       {/* Hero Section - Improved version */}
       <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-10 py-16">
         <div className="max-w-6xl mx-auto">

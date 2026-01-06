@@ -56,6 +56,15 @@ export interface IProject {
   images?: string[];
 }
 
+export interface ExportData {
+  personalInfo: IPersonalInfo;
+  experiences: IExperience[];
+  educations: IEducation[];
+  skills: ISkills;
+  languages: ILanguage[];
+  projects: IProject[];
+}
+
 export interface IStyleOptions {
   fontFamily: string;
   fontSize: number;

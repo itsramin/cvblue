@@ -15,50 +15,54 @@ import {
   CodeOutlined,
   GlobalOutlined,
   ProjectOutlined,
+  DatabaseOutlined,
 } from "@ant-design/icons";
-import Header from "@/components/Header";
+import Backup from "@/components/Backup";
 
 const { Sider, Content } = Layout;
 
 export default function FormPage() {
   const [activeSection, setActiveSection] = useState<string>("personal");
 
+  // Define menu items separately without React components
   const menuItems = [
     {
       key: "personal",
       icon: <UserOutlined />,
       label: "Personal Information",
-      component: <PersonalInfo />,
     },
     {
       key: "experience",
       icon: <BuildOutlined />,
       label: "Work Experience",
-      component: <WorkExperience />,
     },
     {
       key: "education",
       icon: <BookOutlined />,
       label: "Education",
-      component: <Education />,
     },
     {
       key: "skills",
       icon: <CodeOutlined />,
       label: "Skills",
-      component: <Skills />,
     },
     {
       key: "languages",
       icon: <GlobalOutlined />,
       label: "Languages",
-      component: <Languages />,
     },
     {
       key: "projects",
       icon: <ProjectOutlined />,
       label: "Projects",
-      component: <Projects />,
+    },
+    {
+      type: "divider" as const,
+    },
+    {
+      key: "backup",
+      icon: <DatabaseOutlined />,
+      label: "Backup",
     },
   ];
 
@@ -66,13 +70,32 @@ export default function FormPage() {
     setActiveSection(key);
   };
 
-  const activeComponent = menuItems.find(
-    (item) => item.key === activeSection
-  )?.component;
+  // Map the active section to its component
+  const getActiveComponent = () => {
+    switch (activeSection) {
+      case "personal":
+        return <PersonalInfo />;
+      case "experience":
+        return <WorkExperience />;
+      case "education":
+        return <Education />;
+      case "skills":
+        return <Skills />;
+      case "languages":
+        return <Languages />;
+      case "projects":
+        return <Projects />;
+      case "backup":
+        return <Backup />;
+
+      default:
+        return <PersonalInfo />;
+    }
+  };
 
   return (
-    <Layout className="!min-h-screen">
-      <Header />
+    <Layout className="!min-h-[calc(100vh-84px)]">
+      {/* <Header /> */}
 
       <Layout className=" p-2 md:p-10 ">
         <Sider
@@ -86,14 +109,10 @@ export default function FormPage() {
             selectedKeys={[activeSection]}
             onClick={handleMenuClick}
             className="border-0"
-            items={menuItems.map(({ key, icon, label }) => ({
-              key,
-              icon,
-              label,
-            }))}
+            items={menuItems}
           />
         </Sider>
-        <Content className="p-8 bg-white">{activeComponent}</Content>
+        <Content className="p-8 bg-white">{getActiveComponent()}</Content>
       </Layout>
     </Layout>
   );

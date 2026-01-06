@@ -51,7 +51,7 @@ export default function RootLayout({
                 // style={{ direction: "rtl" }}
                 className="select-none md:select-auto"
               >
-                {/* <Header /> */}
+                <Header />
                 {children}
               </div>
             </App>

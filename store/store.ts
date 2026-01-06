@@ -44,6 +44,12 @@ interface UserDataState {
   addProject: (data: IProject) => void;
   removeProject: (id: string) => void;
   updateProject: (id: string, data: Partial<IProject>) => void;
+
+  //// imports
+  importPersonalInfo: (data: IPersonalInfo) => void;
+  importExperiences: (data: IExperience[]) => void;
+  importEducations: (data: IEducation[]) => void;
+  importProjects: (data: IProject[]) => void;
 }
 
 const initialPersonalInfo: IPersonalInfo = {
@@ -121,6 +127,12 @@ export const useData = create<UserDataState>()(
             proj.id === id ? { ...proj, ...data } : proj
           ),
         })),
+
+      //// imports
+      importPersonalInfo: (data) => set(() => ({ personalInfo: data })),
+      importExperiences: (data) => set(() => ({ experiences: data })),
+      importEducations: (data) => set(() => ({ educations: data })),
+      importProjects: (data) => set(() => ({ projects: data })),
     }),
 
     {

@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export default function Header() {
   return (
-    <div className="flex justify-between py-6 px-10  items-center bg-gradient-to-l from-blue-600 to-blue-800">
+    <div className="flex justify-between py-6 px-10  items-center bg-blue-600 ">
       <Link href={"/"} className="font-bold text-3xl !text-white">
         CV Blue
       </Link>
@@ -14,6 +14,9 @@ export default function Header() {
         </Link>
         <Link href={"/preview"} className=" !text-white">
           Preview
+        </Link>
+        <Link href={"/about"} className=" !text-white">
+          About
         </Link>
       </Space>
     </div>
