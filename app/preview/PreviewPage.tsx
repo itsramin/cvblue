@@ -12,10 +12,21 @@ import {
 const { Title, Text } = Typography;
 const { Content, Sider } = Layout;
 
-import { PDFDownloadLink, PDFViewer } from "@react-pdf/renderer";
+import dynamic from "next/dynamic";
 import ClassicLayout from "../../components/layouts/classis/ClassicLayout";
 import ModernLayout from "../../components/layouts/modern/ModernLayout";
 import Header from "@/components/Header";
+
+// Dynamically import PDF components to avoid SSR issues
+const PDFDownloadLink = dynamic(
+  () => import("@react-pdf/renderer").then((mod) => mod.PDFDownloadLink),
+  { ssr: false }
+);
+
+const PDFViewer = dynamic(
+  () => import("@react-pdf/renderer").then((mod) => mod.PDFViewer),
+  { ssr: false }
+);
 
 export default function PreviewPage() {
   const { personalInfo } = useData();
@@ -36,7 +47,9 @@ export default function PreviewPage() {
 
   // Generate filename
   const getFilename = () => {
-    return `${personalInfo.name || "cv"}_${new Date().toLocaleString()}.pdf`;
+    return `${personalInfo.name || "cv"}_${new Date()
+      .toLocaleDateString()
+      .replace(/\//g, "-")}.pdf`;
   };
 
   return (
@@ -70,33 +83,6 @@ export default function PreviewPage() {
                   }}
                 />
               </Card>
-
-              {/* <Card title="Colors">
-                <Space direction="vertical" size="middle" className="w-full">
-                  <Space direction="vertical" size="middle" className="w-full">
-                    <Text strong>Primary Color</Text>
-                    <ColorPicker
-                      value={styleOptions.primaryColor}
-                      onChange={(color) =>
-                        handleStyleChange("primaryColor", color.toHexString())
-                      }
-                      showText
-                      size="large"
-                    />
-                  </Space>
-                  <Space direction="vertical" size="middle" className="w-full">
-                    <Text strong>Secondary Color</Text>
-                    <ColorPicker
-                      value={styleOptions.secondaryColor}
-                      onChange={(color) =>
-                        handleStyleChange("secondaryColor", color.toHexString())
-                      }
-                      showText
-                      size="large"
-                    />
-                  </Space>
-                </Space>
-              </Card> */}
             </Space>
           </div>
         </Sider>
@@ -120,11 +106,12 @@ export default function PreviewPage() {
                       }
                       fileName={getFilename()}
                     >
-                      {({ loading }) => (
+                      {({ loading, blob, url, error }) => (
                         <Button
                           icon={<DownloadOutlined />}
                           type="primary"
                           loading={loading}
+                          disabled={loading}
                         >
                           {loading ? "Preparing PDF..." : "Download PDF"}
                         </Button>
