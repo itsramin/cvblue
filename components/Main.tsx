@@ -54,13 +54,13 @@ export default function Main() {
       icon: <FormOutlined />,
     },
     {
-      title: "Preview & Edit",
-      description: "See real-time preview and make adjustments",
+      title: "Preview",
+      description: "See real-time preview",
       icon: <EyeOutlined />,
     },
     {
       title: "Download",
-      description: "Export as PDF or share online",
+      description: "Export as PDF",
       icon: <DownloadOutlined />,
     },
   ];
@@ -76,8 +76,8 @@ export default function Main() {
             <div className="space-y-6">
               <h1 className="text-5xl font-bold  text-gray-900 leading-tight">
                 Create Your Perfect Resume in minutes{" "}
-                <span className=" font-extrabold text-8xl text-blue-600 mt-2">
-                  CeeVee
+                <span className="block font-extrabold text-8xl text-blue-600 mt-2">
+                  CV Blue
                 </span>
               </h1>
 
@@ -171,7 +171,7 @@ export default function Main() {
                           className="bg-blue-50 rounded-lg p-4 text-center hover:bg-blue-100 transition-colors"
                         >
                           <div className="text-blue-700 font-bold text-lg">
-                            5+
+                            {Math.floor(Math.random() * (10 - 3 + 1)) + 3}
                           </div>
                           <div className="text-gray-700 text-sm">{item}</div>
                         </div>
@@ -181,6 +181,7 @@ export default function Main() {
 
                   <div className="pt-6">
                     <Button
+                      size="large"
                       block
                       type="default"
                       icon={<DownloadOutlined />}
@@ -216,7 +217,7 @@ export default function Main() {
             {features.map((feature, index) => (
               <Col xs={24} sm={12} lg={6} key={index}>
                 <Card
-                  className="h-full border-0 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
+                  className="h-full border-0 shadow-lg hover:shadow-2xl !transition-all !duration-500 hover:-translate-y-1"
                   hoverable
                 >
                   <div
@@ -282,7 +283,6 @@ export default function Main() {
                 <Button
                   type="primary"
                   size="large"
-                  className="h-14 px-12 text-lg bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg hover:shadow-xl"
                   icon={<ArrowRightOutlined />}
                 >
                   Start Building Now
@@ -294,7 +294,7 @@ export default function Main() {
       </div>
 
       {/* Final CTA Section */}
-      <div className="px-4 py-16 md:px-10 md:py-20 bg-gradient-to-r from-blue-600 to-indigo-600">
+      <div className="px-4 py-16 md:px-10 md:py-20 bg-gradient-to-r from-blue-600 to-blue-800">
         <div className="max-w-4xl mx-auto text-center text-white">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-white/20 rounded-full mb-6">
             <StarOutlined className="text-2xl" />
