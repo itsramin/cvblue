@@ -136,7 +136,7 @@ export const useData = create<UserDataState>()(
     }),
 
     {
-      name: "cv-maker",
+      name: "cv-blue",
       storage: createJSONStorage(() => localStorage),
       onRehydrateStorage: () => (state) => {
         state?.hasHydrated && null;
