@@ -33,7 +33,7 @@ export default function AboutUs() {
               color="blue"
               className="text-base py-1.5 px-4 rounded-full"
             >
-              Version: <span className="font-bold ml-1">0.0.1</span>
+              Version: <span className="font-bold ml-1">0.1.0</span>
             </Tag>
           </div>
 
