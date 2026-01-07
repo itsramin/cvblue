@@ -11,6 +11,9 @@ import {
   message,
   Popconfirm,
   Divider,
+  Alert,
+  Row,
+  Col,
 } from "antd";
 import { useEffect, useState } from "react";
 import type { MenuProps } from "antd";
@@ -24,8 +27,14 @@ import {
   FileTextOutlined,
   CalendarOutlined,
   SearchOutlined,
+  ExportOutlined,
+  ImportOutlined,
 } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
+import { ExportService } from "@/services/exportService";
+import { ImportService } from "@/services/importService";
+import FormatSelector from "@/components/importExport/FormatSelector";
+import FileUploader from "@/components/importExport/FileUploader";
 
 const { Text, Title } = Typography;
 const { Search } = Input;
@@ -36,6 +45,10 @@ export default function Dashboard() {
   const [editingCVId, setEditingCVId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [exportFormat, setExportFormat] = useState<"json" | "xml">("json");
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const [selectedExportCVs, setSelectedExportCVs] = useState<string[]>([]);
+  const [messageApi, contextHolder] = message.useMessage();
 
   const nav = useRouter();
 
@@ -59,15 +72,73 @@ export default function Dashboard() {
     }
   }, [cvs, activeCVId, setActiveCV]);
 
+  // Export selected CVs or all CVs
+  const handleExportAllCVs = () => {
+    try {
+      if (cvs.length === 0) {
+        messageApi.warning("No CVs to export. Please create a CV first.");
+        return;
+      }
+
+      const result = ExportService.exportCVCollection(
+        cvs,
+        exportFormat,
+        selectedExportCVs.length > 0 ? selectedExportCVs : undefined
+      );
+
+      messageApi.success(
+        `Successfully exported ${result.count} CV${
+          result.count > 1 ? "s" : ""
+        } as ${result.format.toUpperCase()}!`
+      );
+
+      // Reset selection and close modal
+      setSelectedExportCVs([]);
+      setIsExportModalOpen(false);
+    } catch (error: any) {
+      messageApi.error(error.message || "Failed to export CVs");
+      console.error("Export error:", error);
+    }
+  };
+
+  // Handle file upload for import
+  const handleFileUpload = async (file: File) => {
+    try {
+      const importedData = await ImportService.importCVCollection(file);
+
+      // Import each CV
+      importedData.cvs.forEach((cvData: any) => {
+        addCV({
+          name: cvData.name || `Imported CV ${new Date().toLocaleDateString()}`,
+          personalInfo: cvData.personalInfo,
+          experiences: cvData.experiences || [],
+          educations: cvData.educations || [],
+          skills: cvData.skills || [],
+          languages: cvData.languages || [],
+          projects: cvData.projects || [],
+        });
+      });
+
+      messageApi.success(
+        `Successfully imported ${importedData.cvs.length} CV${
+          importedData.cvs.length > 1 ? "s" : ""
+        }!`
+      );
+    } catch (error: any) {
+      messageApi.error(error.message || "Failed to import data");
+      throw error;
+    }
+  };
+
   const handleAddCV = () => {
     if (!newCVName.trim()) {
-      message.warning("Please enter a name for your CV");
+      messageApi.warning("Please enter a name for your CV");
       return;
     }
 
     const cvId = addCV({ name: newCVName });
     if (cvId) {
-      message.success(`CV "${newCVName}" created successfully`);
+      messageApi.success(`CV "${newCVName}" created successfully`);
       setNewCVName("");
       setIsCVModalOpen(false);
     }
@@ -77,7 +148,7 @@ export default function Dashboard() {
     const originalCV = cvs.find((cv) => cv.id === cvId);
     if (originalCV) {
       duplicateCV(cvId);
-      message.success(`CV "${originalCV.name}" duplicated successfully`);
+      messageApi.success(`CV "${originalCV.name}" duplicated successfully`);
     }
   };
 
@@ -85,7 +156,7 @@ export default function Dashboard() {
     const cvToDelete = cvs.find((cv) => cv.id === cvId);
     if (cvToDelete) {
       removeCV(cvId);
-      message.success(`CV "${cvToDelete.name}" deleted successfully`);
+      messageApi.success(`CV "${cvToDelete.name}" deleted successfully`);
     }
   };
 
@@ -96,12 +167,12 @@ export default function Dashboard() {
 
   const saveCVName = (cvId: string) => {
     if (!editingName.trim()) {
-      message.warning("CV name cannot be empty");
+      messageApi.warning("CV name cannot be empty");
       return;
     }
 
     updateCV(cvId, { name: editingName });
-    message.success("CV name updated");
+    messageApi.success("CV name updated");
     setEditingCVId(null);
     setEditingName("");
   };
@@ -109,6 +180,20 @@ export default function Dashboard() {
   const cancelEditing = () => {
     setEditingCVId(null);
     setEditingName("");
+  };
+
+  const toggleCVSelection = (cvId: string) => {
+    setSelectedExportCVs((prev) =>
+      prev.includes(cvId) ? prev.filter((id) => id !== cvId) : [...prev, cvId]
+    );
+  };
+
+  const selectAllCVs = () => {
+    setSelectedExportCVs(filteredCVs.map((cv) => cv.id));
+  };
+
+  const deselectAllCVs = () => {
+    setSelectedExportCVs([]);
   };
 
   const getCVDropdownItems = (
@@ -162,7 +247,8 @@ export default function Dashboard() {
 
   return (
     <>
-      <div className=" ">
+      {contextHolder}
+      <div className="">
         {/* Header */}
         <div className="mb-8">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
@@ -182,14 +268,34 @@ export default function Dashboard() {
                 prefix={<SearchOutlined />}
               />
 
-              <Button
-                type="primary"
-                icon={<PlusOutlined />}
-                onClick={() => setIsCVModalOpen(true)}
-                className="whitespace-nowrap"
-              >
-                New CV
-              </Button>
+              <div className="flex gap-3">
+                <FileUploader
+                  onUpload={handleFileUpload}
+                  buttonText="Import All"
+                  buttonProps={{
+                    icon: <ImportOutlined />,
+                    className: "whitespace-nowrap",
+                  }}
+                />
+
+                <Button
+                  icon={<ExportOutlined />}
+                  onClick={() => setIsExportModalOpen(true)}
+                  className="whitespace-nowrap"
+                  disabled={cvs.length === 0}
+                >
+                  Export All
+                </Button>
+
+                <Button
+                  type="primary"
+                  icon={<PlusOutlined />}
+                  onClick={() => setIsCVModalOpen(true)}
+                  className="whitespace-nowrap"
+                >
+                  New CV
+                </Button>
+              </div>
             </div>
           </div>
         </div>
@@ -214,7 +320,7 @@ export default function Dashboard() {
                           className="mb-1"
                           suffix={
                             <CheckOutlined
-                              className="text-green-500 cursor-pointer hover:text-green-600"
+                              className=" cursor-pointer"
                               onClick={() => saveCVName(cv.id)}
                             />
                           }
@@ -290,17 +396,19 @@ export default function Dashboard() {
                   </div>
                 </div>
 
-                {/* Action Button */}
-                <Button
-                  type={"primary"}
-                  className="w-full mt-4"
-                  onClick={() => {
-                    setActiveCV(cv.id);
-                    nav.push("/form");
-                  }}
-                >
-                  Edit CV
-                </Button>
+                {/* Action Buttons */}
+                <div className="flex flex-col gap-2 mt-4">
+                  <Button
+                    type="primary"
+                    className="w-full"
+                    onClick={() => {
+                      setActiveCV(cv.id);
+                      nav.push("/form");
+                    }}
+                  >
+                    Edit CV
+                  </Button>
+                </div>
               </Card>
             ))}
           </div>
@@ -362,6 +470,81 @@ export default function Dashboard() {
             You can add experiences, education, skills, and projects after
             creating the CV.
           </Text>
+        </div>
+      </Modal>
+
+      {/* Export All CVs Modal */}
+      <Modal
+        title="Export CV Collection"
+        open={isExportModalOpen}
+        onOk={handleExportAllCVs}
+        onCancel={() => {
+          setIsExportModalOpen(false);
+          setSelectedExportCVs([]);
+        }}
+        okText="Export"
+        cancelText="Cancel"
+        width={600}
+      >
+        <div className="my-10">
+          <div className="mb-10 flex justify-between items-center">
+            <Text strong className="block mb-2">
+              Export Format
+            </Text>
+            <FormatSelector
+              value={exportFormat}
+              onChange={setExportFormat}
+              buttonStyle="solid"
+            />
+          </div>
+
+          <div className="mb-4">
+            <div className="flex justify-between items-start mb-2">
+              <div className="flex flex-col gap-2">
+                <Text strong>Select CVs</Text>
+                <Text className="!text-gray-500">{`${
+                  selectedExportCVs.length
+                } CV${
+                  selectedExportCVs.length > 1 ? "s" : ""
+                } selected for export.`}</Text>
+              </div>
+              <div className="flex gap-2">
+                <Button size="small" onClick={selectAllCVs}>
+                  Select All
+                </Button>
+                <Button size="small" onClick={deselectAllCVs}>
+                  Deselect All
+                </Button>
+              </div>
+            </div>
+
+            <div className="max-h-60 overflow-y-auto border border-gray-400 rounded px-2">
+              {filteredCVs.map((cv) => (
+                <div
+                  key={cv.id}
+                  className={`flex items-center justify-between p-2 my-2 hover:bg-gray-50 rounded cursor-pointer ${
+                    selectedExportCVs.includes(cv.id) ? "bg-blue-50" : ""
+                  }`}
+                  onClick={() => toggleCVSelection(cv.id)}
+                >
+                  <div>
+                    <Text strong>{cv.name}</Text>
+                    <div className="text-xs text-gray-500">
+                      {cv.experiences.length} exp, {cv.educations.length} edu,{" "}
+                      {cv.skills.length} skills
+                    </div>
+                  </div>
+                  <div>
+                    {selectedExportCVs.includes(cv.id) ? (
+                      <CheckOutlined className="text-green-500" />
+                    ) : (
+                      <div className="w-4 h-4 border rounded" />
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </Modal>
     </>

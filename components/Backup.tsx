@@ -1,20 +1,11 @@
 import React from "react";
-import {
-  Button,
-  message,
-  Upload,
-  Radio,
-  RadioChangeEvent,
-  Alert,
-  Tag,
-  Card,
-  Statistic,
-  Row,
-  Col,
-} from "antd";
-import { DownloadOutlined, UploadOutlined } from "@ant-design/icons";
+import { Button, message, Alert, Tag, Card, Statistic, Row, Col } from "antd";
+import { DownloadOutlined } from "@ant-design/icons";
 import { useData } from "@/store/store";
-import { ExportData } from "@/type/type";
+import { ExportService } from "@/services/exportService";
+import { ImportService } from "@/services/importService";
+import FormatSelector from "@/components/importExport/FormatSelector";
+import FileUploader from "@/components/importExport/FileUploader";
 
 export default function Backup() {
   const [messageApi, contextHolder] = message.useMessage();
@@ -26,18 +17,12 @@ export default function Backup() {
     skills,
     languages,
     projects,
-
     importData,
   } = useData();
 
   const [exportFormat, setExportFormat] = React.useState<"json" | "xml">(
     "json"
   );
-
-  // Handle export format change
-  const handleExportFormatChange = (e: RadioChangeEvent) => {
-    setExportFormat(e.target.value);
-  };
 
   // Export active CV data based on selected format
   const handleExport = () => {
@@ -50,7 +35,7 @@ export default function Backup() {
         return;
       }
 
-      const exportData: ExportData = {
+      const exportData = {
         personalInfo,
         experiences,
         educations,
@@ -59,39 +44,16 @@ export default function Backup() {
         projects,
       };
 
-      let dataStr: string;
-      let mimeType: string;
-      let fileExtension: string;
-
-      if (exportFormat === "json") {
-        dataStr = JSON.stringify(exportData, null, 2);
-        mimeType = "application/json";
-        fileExtension = "json";
-      } else {
-        // XML export
-        dataStr = jsonToXml(exportData);
-        mimeType = "application/xml";
-        fileExtension = "xml";
-      }
-
-      const cvName = activeCV.name || "cv-blue";
-      const safeCvName = cvName.replace(/[^a-z0-9]/gi, "-").toLowerCase();
-      const dataUri = `data:${mimeType};charset=utf-8,${encodeURIComponent(
-        dataStr
-      )}`;
-      const exportFileDefaultName = `${safeCvName}-${
-        new Date().toISOString().split("T")[0]
-      }.${fileExtension}`;
-
-      const linkElement = document.createElement("a");
-      linkElement.setAttribute("href", dataUri);
-      linkElement.setAttribute("download", exportFileDefaultName);
-      linkElement.click();
+      const result = ExportService.exportSingleCV(
+        exportData,
+        exportFormat,
+        activeCV.name
+      );
 
       messageApi.success(
         `"${
           activeCV.name
-        }" exported successfully as ${exportFormat.toUpperCase()}!`
+        }" exported successfully as ${result.format.toUpperCase()}!`
       );
     } catch (error) {
       messageApi.error("Failed to export data");
@@ -99,194 +61,27 @@ export default function Backup() {
     }
   };
 
-  // Helper function to convert JSON to XML
-  const jsonToXml = (obj: any, nodeName = "root"): string => {
-    let xml = "";
-
-    if (Array.isArray(obj)) {
-      xml = obj.map((item) => jsonToXml(item, "item")).join("");
-    } else if (typeof obj === "object" && obj !== null) {
-      xml = Object.keys(obj)
-        .map((key) => {
-          const value = obj[key];
-          const childXml = jsonToXml(value, key);
-          return `<${key}>${childXml}</${key}>`;
-        })
-        .join("");
-    } else {
-      // Escape special characters for XML
-      const escapedValue = String(obj)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&apos;");
-      xml = escapedValue;
-    }
-
-    if (nodeName === "root") {
-      return `<?xml version="1.0" encoding="UTF-8"?>\n<cv-blue>\n${xml}\n</cv-blue>`;
-    }
-
-    return xml;
-  };
-
-  // Handle file upload for import (auto-detect format)
-  const handleFileUpload = (file: File) => {
-    return new Promise<void>((resolve, reject) => {
-      const reader = new FileReader();
-      const fileName = file.name.toLowerCase();
-
+  // Handle file upload for import
+  const handleFileUpload = async (file: File) => {
+    try {
       // Check if there's an active CV
       if (!activeCV) {
         messageApi.error(
           "No active CV found. Please create or select a CV first."
         );
-        reject(new Error("No active CV"));
-        return;
+        throw new Error("No active CV");
       }
 
-      // Detect file format by extension
-      const isXML = fileName.endsWith(".xml");
-      const isJSON = fileName.endsWith(".json");
+      const importedData = await ImportService.importSingleCV(file);
 
-      if (!isXML && !isJSON) {
-        messageApi.error(
-          "Unsupported file format. Please upload JSON or XML files."
-        );
-        reject(new Error("Unsupported file format"));
-        return;
-      }
+      // Update active CV with imported data
+      importData(importedData);
 
-      reader.onload = (e) => {
-        try {
-          let importedData: ExportData;
-          const fileContent = e.target?.result as string;
-
-          if (isXML) {
-            // Parse XML
-            importedData = xmlToJson(fileContent);
-            messageApi.success("XML file detected successfully!");
-          } else {
-            // Parse JSON
-            importedData = JSON.parse(fileContent);
-            messageApi.success("JSON file detected successfully!");
-          }
-
-          // Validate import data structure
-          if (!isValidImportData(importedData)) {
-            throw new Error("Invalid data structure");
-          }
-
-          // Update active CV with imported data
-          importData(importedData);
-
-          resolve();
-        } catch (error) {
-          messageApi.error(
-            "Failed to import data. Please check the file format."
-          );
-          reject(error);
-        }
-      };
-
-      reader.onerror = () => {
-        messageApi.error("Failed to read file");
-        reject(new Error("File read error"));
-      };
-
-      reader.readAsText(file);
-    });
-  };
-
-  // Helper function to convert XML to JSON
-  const xmlToJson = (xmlStr: string): ExportData => {
-    const parser = new DOMParser();
-    const xmlDoc = parser.parseFromString(xmlStr, "text/xml");
-
-    const parseXmlNode = (node: Element): any => {
-      // If node has child elements
-      if (node.children.length > 0) {
-        const obj: any = {};
-
-        // Check if it's an array (multiple items with same name)
-        const childNames = Array.from(node.children).map(
-          (child) => child.tagName
-        );
-        const hasDuplicates = childNames.some(
-          (name, index) => childNames.indexOf(name) !== index
-        );
-
-        if (hasDuplicates) {
-          // It's an array
-          const array: any[] = [];
-          const processedNames = new Set();
-
-          Array.from(node.children).forEach((child) => {
-            if (!processedNames.has(child.tagName)) {
-              const sameNameChildren = Array.from(node.children).filter(
-                (c) => c.tagName === child.tagName
-              );
-              if (sameNameChildren.length > 1) {
-                array.push(...sameNameChildren.map((c) => parseXmlNode(c)));
-              } else {
-                obj[child.tagName] = parseXmlNode(child);
-              }
-              processedNames.add(child.tagName);
-            }
-          });
-
-          if (array.length > 0) {
-            if (Object.keys(obj).length > 0) {
-              return { ...obj, items: array };
-            }
-            return array;
-          }
-        } else {
-          // It's an object
-          Array.from(node.children).forEach((child) => {
-            obj[child.tagName] = parseXmlNode(child);
-          });
-        }
-
-        return obj;
-      } else {
-        // Text node
-        return node.textContent || "";
-      }
-    };
-
-    const root = xmlDoc.querySelector("cv-blue");
-    if (!root) {
-      throw new Error("Invalid XML format: missing cv-blue root");
+      messageApi.success("Data imported successfully!");
+    } catch (error: any) {
+      messageApi.error(error.message || "Failed to import data");
+      throw error;
     }
-
-    return parseXmlNode(root) as ExportData;
-  };
-
-  // Validate imported data structure
-  const isValidImportData = (data: any): data is ExportData => {
-    return (
-      data &&
-      typeof data === "object" &&
-      "personalInfo" in data &&
-      "experiences" in data &&
-      "educations" in data &&
-      "skills" in data &&
-      "languages" in data &&
-      "projects" in data
-    );
-  };
-
-  // Custom Upload props for auto-detecting format
-  const uploadProps = {
-    beforeUpload: (file: File) => {
-      handleFileUpload(file);
-      return false; // Prevent auto upload
-    },
-    showUploadList: false,
-    accept: ".json,.xml",
-    multiple: false,
   };
 
   const statItems = [
@@ -386,24 +181,7 @@ export default function Backup() {
                 Choose your preferred export format:
               </p>
 
-              <Radio.Group
-                value={exportFormat}
-                onChange={handleExportFormatChange}
-                buttonStyle="solid"
-              >
-                <Radio.Button
-                  value="json"
-                  className="min-w-[100px] text-center py-3"
-                >
-                  JSON
-                </Radio.Button>
-                <Radio.Button
-                  value="xml"
-                  className="min-w-[100px] text-center py-3"
-                >
-                  XML
-                </Radio.Button>
-              </Radio.Group>
+              <FormatSelector value={exportFormat} onChange={setExportFormat} />
 
               <div className="mt-4">
                 <Button
@@ -452,20 +230,21 @@ export default function Backup() {
               )}
 
               <div className="mt-2">
-                <Upload {...uploadProps}>
-                  <Button
-                    icon={<UploadOutlined />}
-                    size="large"
-                    className="w-full md:w-auto"
-                    disabled={!activeCV}
-                  >
-                    {activeCV
+                <FileUploader
+                  onUpload={handleFileUpload}
+                  disabled={!activeCV}
+                  buttonText={
+                    activeCV
                       ? `Import to "${activeCV.name.substring(0, 20)}${
                           activeCV.name.length > 20 ? "..." : ""
                         }"`
-                      : "Create or select a CV first"}
-                  </Button>
-                </Upload>
+                      : "Create or select a CV first"
+                  }
+                  buttonProps={{
+                    size: "large",
+                    className: "w-full md:w-auto",
+                  }}
+                />
               </div>
             </div>
           </Card>

@@ -11,6 +11,12 @@ export interface ICV {
   updatedAt: string;
 }
 
+export type ICVCollection = {
+  cvs: ICV[];
+  exportedAt?: string;
+  totalCVs?: number;
+};
+
 export interface ILink {
   url: string;
   title: string;
