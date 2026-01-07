@@ -9,12 +9,15 @@ export default function Header() {
       </Link>
 
       <Space size={25}>
-        <Link href={"/form"} className=" !text-white">
+        <Link href={"/dashboard"} className=" !text-white">
+          Dashboard
+        </Link>
+        {/* <Link href={"/form"} className=" !text-white">
           Form
         </Link>
         <Link href={"/preview"} className=" !text-white">
           Preview
-        </Link>
+        </Link> */}
         <Link href={"/about"} className=" !text-white">
           About
         </Link>

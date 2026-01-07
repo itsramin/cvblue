@@ -19,18 +19,15 @@ import { ExportData } from "@/type/type";
 export default function Backup() {
   const [messageApi, contextHolder] = message.useMessage();
   const {
+    activeCV,
     personalInfo,
     experiences,
     educations,
     skills,
     languages,
     projects,
-    importEducations,
-    importExperiences,
-    importPersonalInfo,
-    importProjects,
-    updateSkills,
-    updateLanguages,
+
+    importData,
   } = useData();
 
   const [exportFormat, setExportFormat] = React.useState<"json" | "xml">(
@@ -42,9 +39,17 @@ export default function Backup() {
     setExportFormat(e.target.value);
   };
 
-  // Export data based on selected format
+  // Export active CV data based on selected format
   const handleExport = () => {
     try {
+      // Check if there's an active CV
+      if (!activeCV) {
+        messageApi.warning(
+          "No active CV found. Please create or select a CV first."
+        );
+        return;
+      }
+
       const exportData: ExportData = {
         personalInfo,
         experiences,
@@ -69,10 +74,12 @@ export default function Backup() {
         fileExtension = "xml";
       }
 
+      const cvName = activeCV.name || "cv-blue";
+      const safeCvName = cvName.replace(/[^a-z0-9]/gi, "-").toLowerCase();
       const dataUri = `data:${mimeType};charset=utf-8,${encodeURIComponent(
         dataStr
       )}`;
-      const exportFileDefaultName = `cv-data-${
+      const exportFileDefaultName = `${safeCvName}-${
         new Date().toISOString().split("T")[0]
       }.${fileExtension}`;
 
@@ -82,7 +89,9 @@ export default function Backup() {
       linkElement.click();
 
       messageApi.success(
-        `Data exported successfully as ${exportFormat.toUpperCase()}!`
+        `"${
+          activeCV.name
+        }" exported successfully as ${exportFormat.toUpperCase()}!`
       );
     } catch (error) {
       messageApi.error("Failed to export data");
@@ -116,7 +125,7 @@ export default function Backup() {
     }
 
     if (nodeName === "root") {
-      return `<?xml version="1.0" encoding="UTF-8"?>\n<cv-data>\n${xml}\n</cv-data>`;
+      return `<?xml version="1.0" encoding="UTF-8"?>\n<cv-blue>\n${xml}\n</cv-blue>`;
     }
 
     return xml;
@@ -127,6 +136,15 @@ export default function Backup() {
     return new Promise<void>((resolve, reject) => {
       const reader = new FileReader();
       const fileName = file.name.toLowerCase();
+
+      // Check if there's an active CV
+      if (!activeCV) {
+        messageApi.error(
+          "No active CV found. Please create or select a CV first."
+        );
+        reject(new Error("No active CV"));
+        return;
+      }
 
       // Detect file format by extension
       const isXML = fileName.endsWith(".xml");
@@ -142,26 +160,26 @@ export default function Backup() {
 
       reader.onload = (e) => {
         try {
-          let importData: ExportData;
+          let importedData: ExportData;
           const fileContent = e.target?.result as string;
 
           if (isXML) {
             // Parse XML
-            importData = xmlToJson(fileContent);
-            messageApi.success("XML file detected and imported successfully!");
+            importedData = xmlToJson(fileContent);
+            messageApi.success("XML file detected successfully!");
           } else {
             // Parse JSON
-            importData = JSON.parse(fileContent);
-            messageApi.success("JSON file detected and imported successfully!");
+            importedData = JSON.parse(fileContent);
+            messageApi.success("JSON file detected successfully!");
           }
 
           // Validate import data structure
-          if (!isValidImportData(importData)) {
+          if (!isValidImportData(importedData)) {
             throw new Error("Invalid data structure");
           }
 
-          // Update store with imported data
-          updateStoreWithImportedData(importData);
+          // Update active CV with imported data
+          importData(importedData);
 
           resolve();
         } catch (error) {
@@ -238,9 +256,9 @@ export default function Backup() {
       }
     };
 
-    const root = xmlDoc.querySelector("cv-data");
+    const root = xmlDoc.querySelector("cv-blue");
     if (!root) {
-      throw new Error("Invalid XML format: missing cv-data root");
+      throw new Error("Invalid XML format: missing cv-blue root");
     }
 
     return parseXmlNode(root) as ExportData;
@@ -260,23 +278,6 @@ export default function Backup() {
     );
   };
 
-  // Update store with imported data
-  const updateStoreWithImportedData = (importData: ExportData) => {
-    try {
-      importPersonalInfo(importData.personalInfo);
-      importExperiences(importData.experiences);
-      importEducations(importData.educations);
-      updateSkills(importData.skills);
-      updateLanguages(importData.languages);
-      importProjects(importData.projects);
-
-      messageApi.success("Data imported successfully!");
-    } catch (error) {
-      console.error("Error updating store with imported data:", error);
-      messageApi.error("Failed to update store with imported data");
-    }
-  };
-
   // Custom Upload props for auto-detecting format
   const uploadProps = {
     beforeUpload: (file: File) => {
@@ -289,6 +290,12 @@ export default function Backup() {
   };
 
   const statItems = [
+    {
+      key: "cvName",
+      title: "CV Name",
+      value: activeCV?.name || "No active CV",
+      suffix: null,
+    },
     {
       key: "personalInfo",
       title: "Personal Info",
@@ -336,15 +343,24 @@ export default function Backup() {
           Backup & Restore
         </h1>
         <p className="text-gray-600 text-lg">
-          Export your CV data to backup or import from a previous backup.
+          Export your active CV data to backup or import from a previous backup.
         </p>
       </div>
 
       {/* Data Summary */}
       <div className="mb-12 bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-xl border border-blue-100">
-        <h3 className="text-xl font-semibold text-gray-800 mb-4">
-          Current Data Summary
-        </h3>
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-xl font-semibold text-gray-800">
+            Current Data Summary
+          </h3>
+          {!activeCV && (
+            <Alert
+              message="No active CV selected. Please create or select a CV first."
+              type="warning"
+              showIcon
+            />
+          )}
+        </div>
         <Row gutter={[16, 16]}>
           {statItems.map((item) => (
             <Col xs={24} sm={12} lg={8} key={item.key}>
@@ -360,7 +376,7 @@ export default function Backup() {
         </Row>
       </div>
 
-      {/* Export Section */}
+      {/* Export & Import Section */}
       <div className="mb-12">
         <div className="flex flex-col lg:flex-row gap-8 justify-between items-stretch">
           {/* Export Card */}
@@ -396,8 +412,13 @@ export default function Backup() {
                   size="large"
                   className="w-full md:w-auto min-w-[200px]"
                   onClick={handleExport}
+                  disabled={!activeCV}
                 >
-                  Export as {exportFormat.toUpperCase()}
+                  {activeCV
+                    ? `Export "${activeCV.name.substring(0, 20)}${
+                        activeCV.name.length > 20 ? "..." : ""
+                      }" as ${exportFormat.toUpperCase()}`
+                    : "No active CV to export"}
                 </Button>
                 <p className="text-gray-500 text-sm mt-3">
                   File will be downloaded as .{exportFormat}
@@ -410,16 +431,25 @@ export default function Backup() {
           <Card title="Import Format" className="flex-1">
             <div className="flex flex-col gap-6 items-center">
               <p className="text-gray-600">
-                Upload a previously exported <Tag>JSON</Tag>or <Tag>XML</Tag>
+                Upload a previously exported <Tag>JSON</Tag> or <Tag>XML</Tag>
                 file. The app will automatically detect the format.
               </p>
 
               <Alert
-                message="Importing data will replace your current CV data. Make sure to export a backup before importing."
+                message="Importing data will replace your current active CV data. Make sure to export a backup before importing."
                 type="warning"
                 showIcon
                 className="mb-2"
               />
+
+              {!activeCV && (
+                <Alert
+                  message="No active CV selected. Data will be imported into a new CV."
+                  type="info"
+                  showIcon
+                  className="mb-2"
+                />
+              )}
 
               <div className="mt-2">
                 <Upload {...uploadProps}>
@@ -427,8 +457,13 @@ export default function Backup() {
                     icon={<UploadOutlined />}
                     size="large"
                     className="w-full md:w-auto"
+                    disabled={!activeCV}
                   >
-                    Import Backup File
+                    {activeCV
+                      ? `Import to "${activeCV.name.substring(0, 20)}${
+                          activeCV.name.length > 20 ? "..." : ""
+                        }"`
+                      : "Create or select a CV first"}
                   </Button>
                 </Upload>
               </div>

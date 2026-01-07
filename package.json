@@ -1,6 +1,6 @@
 {
   "name": "cvblue",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
@@ -13,6 +13,7 @@
     "antd": "^5.29.3",
     "lodash": "^4.17.21",
     "next": "^16.1.1",
+    "pako": "^2.1.0",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "zustand": "^5.0.9"

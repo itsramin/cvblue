@@ -1,6 +1,5 @@
 import { Button, Card, Row, Col, Steps } from "antd";
 import {
-  ArrowRightOutlined,
   FormOutlined,
   EyeOutlined,
   DownloadOutlined,
@@ -9,6 +8,9 @@ import {
   CheckOutlined,
   SafetyOutlined,
   StarOutlined,
+  CopyOutlined,
+  FolderOpenOutlined,
+  PlusOutlined,
 } from "@ant-design/icons";
 import Link from "next/link";
 
@@ -44,9 +46,30 @@ export default function Main() {
       color: "text-orange-600",
       bgColor: "bg-orange-50",
     },
+    {
+      icon: <FolderOpenOutlined />,
+      title: "Multiple CVs Management",
+      description:
+        "Create, duplicate, and manage different CVs for different companies",
+      color: "text-red-600",
+      bgColor: "bg-red-50",
+    },
+    {
+      icon: <CopyOutlined />,
+      title: "Easy Duplication",
+      description:
+        "Quickly duplicate and customize CVs for different job applications",
+      color: "text-indigo-600",
+      bgColor: "bg-indigo-50",
+    },
   ];
 
   const steps = [
+    {
+      title: "Create a CV",
+      description: "Give it a name",
+      icon: <PlusOutlined />,
+    },
     {
       title: "Fill Details",
       description: "Enter your information in organized sections",
@@ -65,7 +88,7 @@ export default function Main() {
   ];
 
   return (
-    <div className="min-h-screen">
+    <div>
       {/* Hero Section - Improved version */}
       <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-10 py-16">
         <div className="max-w-6xl mx-auto">
@@ -90,6 +113,12 @@ export default function Main() {
                 <div className="flex items-center gap-x-2">
                   <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
                   <div className="text-gray-700">
+                    Manage multiple CVs for different companies
+                  </div>
+                </div>
+                <div className="flex items-center gap-x-2">
+                  <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                  <div className="text-gray-700">
                     Fill in your details section by section
                   </div>
                 </div>
@@ -108,17 +137,12 @@ export default function Main() {
               </div>
 
               <div className="flex flex-wrap gap-4 pt-6">
-                <Link href={"/form"}>
-                  <Button
-                    type="primary"
-                    size="large"
-                    icon={<ArrowRightOutlined />}
-                    className="bg-blue-600 hover:bg-blue-700 h-12 px-8"
-                  >
+                <Link href={"/dashboard"}>
+                  <Button type="primary" size="large">
                     Start Building Your CV
                   </Button>
                 </Link>
-                <Link href={"/preview"}>
+                {/* <Link href={"/preview"}>
                   <Button
                     size="large"
                     icon={<EyeOutlined />}
@@ -126,7 +150,7 @@ export default function Main() {
                   >
                     Preview Template
                   </Button>
-                </Link>
+                </Link> */}
               </div>
 
               <p className="text-sm text-gray-500 pt-4">
@@ -213,7 +237,7 @@ export default function Main() {
 
           <Row gutter={[24, 24]}>
             {features.map((feature, index) => (
-              <Col xs={24} sm={12} lg={6} key={index}>
+              <Col xs={24} sm={12} lg={8} key={index}>
                 <Card
                   className="h-full border-0 shadow-lg hover:shadow-2xl !transition-all !duration-500 hover:-translate-y-1"
                   hoverable
@@ -277,12 +301,8 @@ export default function Main() {
             </Steps>
 
             <div className="mt-16 text-center">
-              <Link href={"/form"}>
-                <Button
-                  type="primary"
-                  size="large"
-                  icon={<ArrowRightOutlined />}
-                >
+              <Link href={"/dashboard"}>
+                <Button type="primary" size="large">
                   Start Building Now
                 </Button>
               </Link>
@@ -305,17 +325,12 @@ export default function Main() {
             CV builder. It's free, easy, and takes just minutes.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href={"/form"}>
-              <Button
-                type="primary"
-                size="large"
-                className="h-14 px-10 text-lg bg-white text-blue-600 hover:bg-gray-100 shadow-lg hover:shadow-xl"
-                icon={<ArrowRightOutlined />}
-              >
+            <Link href={"/dashboard"}>
+              <Button type="primary" size="large">
                 Get Started Free
               </Button>
             </Link>
-            <Link href={"/preview"}>
+            {/* <Link href={"/preview"}>
               <Button
                 size="large"
                 className="h-14 px-10 text-lg border-2 border-white text-white hover:bg-white/10"
@@ -323,7 +338,7 @@ export default function Main() {
               >
                 View Examples
               </Button>
-            </Link>
+            </Link> */}
           </div>
           <p className="mt-8 text-sm opacity-90">
             No credit card • No registration • No hidden fees

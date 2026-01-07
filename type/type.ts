@@ -1,3 +1,16 @@
+export interface ICV {
+  id: string;
+  name: string;
+  personalInfo: IPersonalInfo;
+  experiences: IExperience[];
+  educations: IEducation[];
+  skills: ISkills;
+  languages: ILanguage[];
+  projects: IProject[];
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface ILink {
   url: string;
   title: string;

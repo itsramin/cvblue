@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import {
-  // Geist, Geist_Mono,
-  Vazirmatn,
-} from "next/font/google";
+// import {
+//   // Geist, Geist_Mono,
+//   Vazirmatn,
+// } from "next/font/google";
 import "./globals.css";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
-import { App, ConfigProvider } from "antd";
+import { App, ConfigProvider, Layout } from "antd";
 import Header from "@/components/Header";
 
 // const geistSans = Geist({
@@ -18,9 +18,9 @@ import Header from "@/components/Header";
 //   subsets: ["latin"],
 // });
 
-const vazir = Vazirmatn({
-  subsets: ["arabic"],
-});
+// const vazir = Vazirmatn({
+//   subsets: ["arabic"],
+// });
 
 export const metadata: Metadata = {
   title: "cv maker",
@@ -40,7 +40,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fa">
-      <body className={`${vazir.className} antialiased`}>
+      <body className={"antialiased"}>
         <AntdRegistry>
           <ConfigProvider
           // direction="rtl"
@@ -48,10 +48,11 @@ export default function RootLayout({
           >
             <App>
               <div
-                // style={{ direction: "rtl" }}
-                className="select-none md:select-auto"
+              // style={{ direction: "rtl" }}
+              // className="min-h-screen"
               >
                 <Header />
+
                 {children}
               </div>
             </App>
