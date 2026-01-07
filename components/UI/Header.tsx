@@ -10,9 +10,9 @@ export default function Header() {
         <Image
           src={logo}
           alt="logo"
-          height={60}
-          width={200}
-          className="h-10 w-auto md:h-16 "
+          height={42}
+          width={140}
+          className="h-8 w-auto md:h-11 "
         />
       </Link>
 
