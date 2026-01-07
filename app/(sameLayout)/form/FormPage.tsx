@@ -19,7 +19,7 @@ import {
   EyeOutlined,
   ArrowLeftOutlined,
 } from "@ant-design/icons";
-import Backup from "@/components/Backup";
+import Backup from "@/components/formSections/Backup";
 import Link from "next/link";
 import { useData } from "@/store/store";
 import { useRouter } from "next/navigation";
