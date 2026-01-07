@@ -1,11 +1,11 @@
 "use client";
 
-import Education from "@/components/formSections/Education";
-import Languages from "@/components/formSections/Languages";
-import PersonalInfo from "@/components/formSections/Personal";
-import Projects from "@/components/formSections/Projects";
-import Skills from "@/components/formSections/Skills";
-import WorkExperience from "@/components/formSections/WorkExperience";
+import Education from "@/components/form/Education";
+import Languages from "@/components/form/Languages";
+import PersonalInfo from "@/components/form/Personal";
+import Projects from "@/components/form/Projects";
+import Skills from "@/components/form/Skills";
+import WorkExperience from "@/components/form/WorkExperience";
 import { Menu, Layout, Button } from "antd";
 import { useEffect, useState } from "react";
 import {
@@ -19,7 +19,7 @@ import {
   EyeOutlined,
   ArrowLeftOutlined,
 } from "@ant-design/icons";
-import Backup from "@/components/formSections/Backup";
+import Backup from "@/components/form/Backup";
 import Link from "next/link";
 import { useData } from "@/store/store";
 import { useRouter } from "next/navigation";

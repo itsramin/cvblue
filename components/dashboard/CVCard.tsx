@@ -4,7 +4,7 @@ import {
   Card,
   Divider,
   Button,
-  Typography,
+
   Dropdown,
   Input,
   Popconfirm,
@@ -20,8 +20,9 @@ import { MenuProps, message } from "antd";
 import { CopyOutlined, DeleteOutlined } from "@ant-design/icons";
 import { useData } from "@/store/store";
 import { ICV } from "@/type/type";
+import { Text } from "../UI/MyText";
 
-const { Text } = Typography;
+
 
 interface CVCardProps {
   cv: ICV;

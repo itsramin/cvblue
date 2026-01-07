@@ -1,29 +1,38 @@
 "use client";
 
 import { useData } from "@/store/store";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import EmptyState from "@/components/dashboard/EmptyState";
 import CreateCVModal from "@/components/dashboard/CreateCVModal";
 import ExportModal from "@/components/dashboard/ExportModal";
 import CVList from "@/components/dashboard/CVList";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
+import { Skeleton } from "antd";
 
 export default function Dashboard() {
   const [isCVModalOpen, setIsCVModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
   const [selectedExportCVs, setSelectedExportCVs] = useState<string[]>([]);
-  const { cvs, activeCVId, setActiveCV } = useData();
+  const { cvs, hasHydrated } = useData();
 
+  if (!hasHydrated && cvs.length === 0) {
+    return (
+      <div>
+        <DashboardHeader
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+          onCreateCV={() => setIsCVModalOpen(true)}
+          onExportAll={() => setIsExportModalOpen(true)}
+          hasCVs={cvs.length > 0}
+        />
+        <Skeleton />
+      </div>
+    );
+  }
   const filteredCVs = cvs.filter((cv) =>
     cv.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
-  useEffect(() => {
-    if (cvs.length > 0 && !activeCVId) {
-      setActiveCV(cvs[0].id);
-    }
-  }, [cvs, activeCVId, setActiveCV]);
 
   return (
     <>

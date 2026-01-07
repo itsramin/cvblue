@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useData } from "@/store/store";
-import EditableList from "../EditableList";
+import EditableList from "../UI/EditableList";
 import { EditableItem } from "@/type/type";
 
 const Skills: React.FC = () => {

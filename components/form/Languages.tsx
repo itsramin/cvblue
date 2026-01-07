@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Input, Select, Button, Tag, Form } from "antd";
+import { Input, Select, Button, Tag, Form, Empty } from "antd";
 import {
   PlusOutlined,
   DeleteOutlined,
@@ -65,13 +65,7 @@ const Languages: React.FC = () => {
       {/* Languages List - TOP */}
       <div className="mb-8">
         {enteredLanguages.length === 0 ? (
-          <div className="text-center py-10 border-2 border-dashed border-gray-300 rounded-xl bg-gray-50">
-            <GlobalOutlined className="text-4xl !text-gray-400 mb-3" />
-            <p className="text-gray-500">No languages added yet</p>
-            <p className="text-sm text-gray-400 mt-1">
-              Add your first language below
-            </p>
-          </div>
+          <Empty description="No languages added yet" />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 ">
             {enteredLanguages.map((language) => {

@@ -1,6 +1,6 @@
 // EditableList.tsx
 import React, { useState } from "react";
-import { Input, Button, Space, Typography } from "antd";
+import { Input, Button, Space } from "antd";
 import {
   EditOutlined,
   DeleteOutlined,
@@ -12,8 +12,7 @@ import {
   DownOutlined,
 } from "@ant-design/icons";
 import { EditableItem } from "@/type/type";
-
-const { Text } = Typography;
+import { Text } from "./MyText";
 
 interface EditableListProps {
   items: EditableItem[];

@@ -7,7 +7,6 @@ import {
   Row,
   Col,
   Button,
-  Typography,
   DatePicker,
   Switch,
   Card,
@@ -16,6 +15,8 @@ import {
   Tag,
   InputNumber,
   Modal,
+  Skeleton,
+  Empty,
 } from "antd";
 import {
   DeleteOutlined,
@@ -30,10 +31,17 @@ const { Item } = Form;
 const { TextArea } = Input;
 
 export default function Education() {
-  const { addEducation, educations, removeEducation, updateEducation } =
-    useData();
+  const {
+    addEducation,
+    educations,
+    removeEducation,
+    updateEducation,
+    hasHydrated,
+  } = useData();
   const [status, setStatus] = useState<"new" | "edit" | "">("");
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
   const [form] = Form.useForm();
   const [convertedData, setConvertedData] = useState<
     {
@@ -109,6 +117,20 @@ export default function Education() {
     setConvertedData(converted);
   }, [educations]);
 
+  useEffect(() => {
+    if (hasHydrated) {
+      // Small delay to ensure everything is loaded
+      const timer = setTimeout(() => {
+        setIsLoading(false);
+      }, 50);
+      return () => clearTimeout(timer);
+    }
+  }, [hasHydrated]);
+
+  if (!hasHydrated || isLoading) {
+    return <Skeleton />;
+  }
+
   const submitHandler = (values: any) => {
     const newEdu = {
       id: editingId || Date.now().toString(),
@@ -177,36 +199,40 @@ export default function Education() {
 
   return (
     <div className="flex flex-col gap-y-6">
-      {convertedData.map((item) => (
-        <Card
-          key={item.id}
-          className="w-full"
-          title={item.title}
-          extra={
-            <Space>
-              <Button
-                type="text"
-                icon={<EditOutlined />}
-                onClick={() => handleEdit(item.id)}
-                size="small"
-              />
-              <Button
-                type="text"
-                danger
-                icon={<DeleteOutlined />}
-                onClick={() => {
-                  removeEducation(item.id);
-                }}
-              />
-            </Space>
-          }
-        >
-          <Descriptions
-            items={item.data}
-            column={{ xs: 1, sm: 2, md: 3, lg: 3, xl: 4, xxl: 4 }}
-          />
-        </Card>
-      ))}
+      {convertedData.length > 0 ? (
+        convertedData.map((item) => (
+          <Card
+            key={item.id}
+            className="w-full"
+            title={item.title}
+            extra={
+              <Space>
+                <Button
+                  type="text"
+                  icon={<EditOutlined />}
+                  onClick={() => handleEdit(item.id)}
+                  size="small"
+                />
+                <Button
+                  type="text"
+                  danger
+                  icon={<DeleteOutlined />}
+                  onClick={() => {
+                    removeEducation(item.id);
+                  }}
+                />
+              </Space>
+            }
+          >
+            <Descriptions
+              items={item.data}
+              column={{ xs: 1, sm: 2, md: 3, lg: 3, xl: 4, xxl: 4 }}
+            />
+          </Card>
+        ))
+      ) : (
+        <Empty description="No Education added yet" />
+      )}
 
       {/* Education Form Modal */}
       <Modal

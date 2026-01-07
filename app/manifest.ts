@@ -2,9 +2,9 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "cvmaker",
-    short_name: "cvmaker",
-    description: "cvmaker",
+    name: "CVBlue",
+    short_name: "CVBlue",
+    description: "CVBlue",
     start_url: "/",
     display: "standalone",
     background_color: "#ffffff",

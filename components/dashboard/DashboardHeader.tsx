@@ -1,4 +1,4 @@
-import { Typography, Input, Button, message } from "antd";
+import { Input, Button, message } from "antd";
 import {
   PlusOutlined,
   ExportOutlined,
@@ -8,9 +8,9 @@ import {
 import FileUploader from "@/components/importExport/FileUploader";
 import { ImportService } from "@/services/importService";
 import { useData } from "@/store/store";
+import { Title } from "../UI/MyText";
 
 const { Search } = Input;
-const { Title } = Typography;
 
 interface DashboardHeaderProps {
   searchTerm: string;

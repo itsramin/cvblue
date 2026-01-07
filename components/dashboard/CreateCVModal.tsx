@@ -1,8 +1,7 @@
 import { useState } from "react";
-import { Modal, Input, Typography, message } from "antd";
+import { Modal, Input, message } from "antd";
 import { useData } from "@/store/store";
-
-const { Text } = Typography;
+import { Text } from "../UI/MyText";
 
 interface CreateCVModalProps {
   open: boolean;

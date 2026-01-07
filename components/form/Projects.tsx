@@ -18,6 +18,8 @@ import {
   message,
   UploadFile,
   UploadProps,
+  Skeleton,
+  Empty,
 } from "antd";
 import {
   DeleteOutlined,
@@ -29,7 +31,7 @@ import {
 } from "@ant-design/icons";
 import React, { useEffect, useState } from "react";
 import dayjs from "dayjs";
-import EditableList from "../EditableList";
+import EditableList from "../UI/EditableList";
 import type { RcFile } from "antd/es/upload";
 import { EditableItem } from "@/type/type";
 
@@ -45,7 +47,8 @@ const getBase64 = (file: RcFile): Promise<string> =>
   });
 
 export default function Projects() {
-  const { addProject, projects, removeProject, updateProject } = useData();
+  const { addProject, projects, removeProject, updateProject, hasHydrated } =
+    useData();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalTitle, setModalTitle] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -66,6 +69,7 @@ export default function Projects() {
   const [previewImage, setPreviewImage] = useState("");
   const [previewTitle, setPreviewTitle] = useState("");
   const [messageApi, contextHolder] = message.useMessage();
+  const [isLoading, setIsLoading] = useState(true);
 
   const beforeUpload = (file: RcFile, fileList: RcFile[]) => {
     const isImage = file.type.startsWith("image/");
@@ -197,6 +201,20 @@ export default function Projects() {
 
     setConvertedData(converted);
   }, [projects]);
+
+  useEffect(() => {
+    if (hasHydrated) {
+      // Small delay to ensure everything is loaded
+      const timer = setTimeout(() => {
+        setIsLoading(false);
+      }, 50);
+      return () => clearTimeout(timer);
+    }
+  }, [hasHydrated]);
+
+  if (!hasHydrated || isLoading) {
+    return <Skeleton />;
+  }
 
   const showModal = (mode: "add" | "edit", id?: string) => {
     if (mode === "edit" && id) {
@@ -334,36 +352,40 @@ export default function Projects() {
   return (
     <div className="flex flex-col gap-y-6">
       {contextHolder}
-      {convertedData.map((item) => (
-        <Card
-          key={item.id}
-          className="w-full"
-          title={item.name}
-          extra={
-            <Space>
-              <Button
-                type="text"
-                icon={<EditOutlined />}
-                onClick={() => showModal("edit", item.id)}
-                size="small"
-              />
-              <Button
-                type="text"
-                danger
-                icon={<DeleteOutlined />}
-                onClick={() => {
-                  removeProject(item.id);
-                }}
-              />
-            </Space>
-          }
-        >
-          <Descriptions
-            items={item.data}
-            column={{ xs: 1, sm: 2, md: 2, lg: 2, xl: 3, xxl: 3 }}
-          />
-        </Card>
-      ))}
+      {convertedData.length > 0 ? (
+        convertedData.map((item) => (
+          <Card
+            key={item.id}
+            className="w-full"
+            title={item.name}
+            extra={
+              <Space>
+                <Button
+                  type="text"
+                  icon={<EditOutlined />}
+                  onClick={() => showModal("edit", item.id)}
+                  size="small"
+                />
+                <Button
+                  type="text"
+                  danger
+                  icon={<DeleteOutlined />}
+                  onClick={() => {
+                    removeProject(item.id);
+                  }}
+                />
+              </Space>
+            }
+          >
+            <Descriptions
+              items={item.data}
+              column={{ xs: 1, sm: 2, md: 2, lg: 2, xl: 3, xxl: 3 }}
+            />
+          </Card>
+        ))
+      ) : (
+        <Empty description="No projects added yet" />
+      )}
 
       <Button
         icon={<PlusOutlined />}

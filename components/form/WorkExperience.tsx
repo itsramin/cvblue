@@ -14,6 +14,8 @@ import {
   Space,
   Tag,
   Modal,
+  Skeleton,
+  Empty,
 } from "antd";
 import {
   DeleteOutlined,
@@ -23,15 +25,21 @@ import {
 } from "@ant-design/icons";
 import React, { useEffect, useState } from "react";
 import dayjs from "dayjs";
-import EditableList from "../EditableList";
+import EditableList from "../UI/EditableList";
 import { EditableItem } from "@/type/type";
 
 const { Item } = Form;
 const { TextArea } = Input;
 
 export default function WorkExperience() {
-  const { addExperience, experiences, removeExperience, updateExperience } =
-    useData();
+  const {
+    hasHydrated,
+    addExperience,
+    experiences,
+    removeExperience,
+    updateExperience,
+  } = useData();
+  const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalTitle, setModalTitle] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -127,6 +135,21 @@ export default function WorkExperience() {
     setConvertedData(converted);
   }, [experiences]);
 
+  // Use effect to handle hydration properly
+  useEffect(() => {
+    if (hasHydrated) {
+      // Small delay to ensure everything is loaded
+      const timer = setTimeout(() => {
+        setIsLoading(false);
+      }, 50);
+      return () => clearTimeout(timer);
+    }
+  }, [hasHydrated]);
+
+  if (!hasHydrated || isLoading) {
+    return <Skeleton />;
+  }
+
   const showModal = (mode: "add" | "edit", id?: string) => {
     if (mode === "edit" && id) {
       setModalTitle("Edit Experience");
@@ -216,36 +239,40 @@ export default function WorkExperience() {
 
   return (
     <div className="flex flex-col gap-y-6">
-      {convertedData.map((item) => (
-        <Card
-          key={item.id}
-          className="w-full"
-          title={item.company}
-          extra={
-            <Space>
-              <Button
-                type="text"
-                icon={<EditOutlined />}
-                onClick={() => showModal("edit", item.id)}
-                size="small"
-              />
-              <Button
-                type="text"
-                danger
-                icon={<DeleteOutlined />}
-                onClick={() => {
-                  removeExperience(item.id);
-                }}
-              />
-            </Space>
-          }
-        >
-          <Descriptions
-            items={item.data}
-            column={{ xs: 1, sm: 2, md: 3, lg: 3, xl: 4, xxl: 4 }}
-          />
-        </Card>
-      ))}
+      {convertedData.length > 0 ? (
+        convertedData.map((item) => (
+          <Card
+            key={item.id}
+            className="w-full"
+            title={item.company}
+            extra={
+              <Space>
+                <Button
+                  type="text"
+                  icon={<EditOutlined />}
+                  onClick={() => showModal("edit", item.id)}
+                  size="small"
+                />
+                <Button
+                  type="text"
+                  danger
+                  icon={<DeleteOutlined />}
+                  onClick={() => {
+                    removeExperience(item.id);
+                  }}
+                />
+              </Space>
+            }
+          >
+            <Descriptions
+              items={item.data}
+              column={{ xs: 1, sm: 2, md: 3, lg: 3, xl: 4, xxl: 4 }}
+            />
+          </Card>
+        ))
+      ) : (
+        <Empty description="No Work experience added yet" />
+      )}
 
       <Button
         icon={<PlusOutlined />}

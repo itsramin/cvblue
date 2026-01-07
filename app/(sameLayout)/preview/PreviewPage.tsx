@@ -2,14 +2,13 @@
 
 import { useData } from "@/store/store";
 import { useEffect, useState } from "react";
-import { Card, Row, Col, Typography, Button, Space, Layout, Radio } from "antd";
+import { Card, Row, Col, Button, Space, Layout, Radio } from "antd";
 import {
   ArrowLeftOutlined,
   DownloadOutlined,
   SettingOutlined,
 } from "@ant-design/icons";
 
-const { Title, Text } = Typography;
 const { Content, Sider } = Layout;
 
 import dynamic from "next/dynamic";
@@ -17,6 +16,7 @@ import ClassicLayout from "../../../components/layouts/classis/ClassicLayout";
 import ModernLayout from "../../../components/layouts/modern/ModernLayout";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { Text, Title } from "@/components/UI/MyText";
 
 // Dynamically import PDF components to avoid SSR issues
 const PDFDownloadLink = dynamic(

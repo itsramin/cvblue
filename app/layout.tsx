@@ -6,7 +6,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import { App, ConfigProvider, Layout } from "antd";
-import Header from "@/components/Header";
+import Header from "@/components/UI/Header";
 
 // const geistSans = Geist({
 //   variable: "--font-geist-sans",
@@ -23,8 +23,8 @@ import Header from "@/components/Header";
 // });
 
 export const metadata: Metadata = {
-  title: "cv maker",
-  description: "cv maker",
+  title: "CV Blue",
+  description: "Build your CV in minutes",
 };
 
 {

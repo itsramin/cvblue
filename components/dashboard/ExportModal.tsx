@@ -1,11 +1,10 @@
 import { useState } from "react";
-import { Modal, Typography, Button, message } from "antd";
+import { Modal, Button, message } from "antd";
 import { CheckOutlined } from "@ant-design/icons";
 import FormatSelector from "@/components/importExport/FormatSelector";
 import { ExportService } from "@/services/exportService";
 import { ICV } from "@/type/type";
-
-const { Text } = Typography;
+import { Text } from "../UI/MyText";
 
 interface ExportModalProps {
   open: boolean;

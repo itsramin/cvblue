@@ -1,18 +1,17 @@
-"use client";
-import { Divider, Typography, Button, Tag } from "antd";
+import { Divider, Button, Tag } from "antd";
 import {
   GithubOutlined,
   InfoCircleOutlined,
   TeamOutlined,
 } from "@ant-design/icons";
-
-const { Title, Text, Paragraph } = Typography;
+import { Text, Title, Paragraph } from "@/components/UI/MyText";
 
 export default function AboutUs() {
   return (
     <>
       <div className="max-w-4xl mx-auto">
         {/* Header Section */}
+
         <div className="text-center mb-10 flex flex-col items-center ">
           <Title level={1} className="!mb-2 !text-4xl md:!text-5xl">
             <span className="text-blue-600 font-bold">CV</span>

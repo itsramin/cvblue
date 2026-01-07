@@ -1,7 +1,6 @@
-import { Card, Button, Typography } from "antd";
+import { Card, Button } from "antd";
 import { PlusOutlined, FileTextOutlined } from "@ant-design/icons";
-
-const { Title, Text } = Typography;
+import { Text, Title } from "../UI/MyText";
 
 interface EmptyStateProps {
   searchTerm: string;
