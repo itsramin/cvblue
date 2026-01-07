@@ -7,12 +7,6 @@ export const metadata: Metadata = {
   description: "Build your CV in minutes",
 };
 
-{
-  /* <body
-className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-> */
-}
-
 export default function WithHeader({
   children,
 }: Readonly<{
@@ -22,7 +16,7 @@ export default function WithHeader({
     <AntdRegistry>
       <ConfigProvider>
         <App>
-          <Layout className="p-4 md:p-10 !min-h-[calc(100vh-86px)]">
+          <Layout className="p-4 md:p-10 !min-h-[calc(100vh-104px)]">
             {children}
           </Layout>
         </App>

@@ -5,6 +5,8 @@ import {
   TeamOutlined,
 } from "@ant-design/icons";
 import { Text, Title, Paragraph } from "@/components/UI/MyText";
+import logo from "@/public/images/logo.png";
+import Image from "next/image";
 
 export default function AboutUs() {
   return (
@@ -13,15 +15,13 @@ export default function AboutUs() {
         {/* Header Section */}
 
         <div className="text-center mb-10 flex flex-col items-center ">
-          <Title level={1} className="!mb-2 !text-4xl md:!text-5xl">
-            <span className="text-blue-600 font-bold">CV</span>
-            <span className="text-gray-800">Blue</span>
-          </Title>
+          <Image src={logo} alt="logo" height={60} width={200} />
+
           <Text type="secondary" className="text-lg">
             Intelligent Resume Management System
           </Text>
           <Tag icon={<InfoCircleOutlined />} color="blue" className="!mt-4">
-            Version: <span className="font-bold ml-1">0.2.0</span>
+            Version: <span className="font-bold ml-1">0.3.0</span>
           </Tag>
         </div>
 

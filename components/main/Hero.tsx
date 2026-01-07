@@ -1,6 +1,8 @@
 import { Button } from "antd";
 import { DownloadOutlined } from "@ant-design/icons";
 import Link from "next/link";
+import Image from "next/image";
+import logo from "@/public/images/logo.png";
 
 export default function Hero() {
   return (
@@ -10,10 +12,8 @@ export default function Hero() {
           {/* Left Column - Text Content */}
           <div className="space-y-6">
             <h1 className="text-5xl font-bold  text-gray-900 leading-tight">
-              Create Your Perfect Resume in minutes{" "}
-              <span className="block font-extrabold text-8xl text-blue-600 mt-2">
-                CV Blue
-              </span>
+              Create Your Perfect CV in minutes with{" "}
+              <Image src={logo} alt="logo" height={120} width={400} />
             </h1>
 
             <p className="text-lg text-gray-600 max-w-lg leading-relaxed">
