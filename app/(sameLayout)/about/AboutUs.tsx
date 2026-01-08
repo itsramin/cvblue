@@ -3,6 +3,7 @@ import {
   GithubOutlined,
   InfoCircleOutlined,
   TeamOutlined,
+  LayoutOutlined,
 } from "@ant-design/icons";
 import { Text, Title, Paragraph } from "@/components/UI/MyText";
 import logo from "@/public/images/logo.png";
@@ -45,6 +46,31 @@ export default function AboutUs() {
 
           <Divider className="my-8" />
 
+          {/* Design Guide Section */}
+          <div className="mb-10">
+            <Title level={3} className="!mb-6 flex items-center gap-2">
+              <LayoutOutlined className="text-purple-500" />
+              Design & Layout Guidelines
+            </Title>
+            <Paragraph className="text-gray-700 mb-6 max-w-2xl">
+              For contributors interested in designing layouts for CV Blue,
+              we've prepared comprehensive guidelines covering our design
+              system, component library, and layout principles.
+            </Paragraph>
+            <Button
+              type="default"
+              size="large"
+              icon={<LayoutOutlined />}
+              href="https://github.com/itsramin/cvblue/blob/main/components/layouts/layout_readme.md"
+              target="_blank"
+              className="border-purple-300 text-purple-600 hover:text-purple-700 hover:border-purple-400"
+            >
+              View Design Guidelines
+            </Button>
+          </div>
+
+          <Divider className="my-8" />
+
           {/* GitHub Section */}
           <div className="text-center">
             <Title
@@ -59,16 +85,29 @@ export default function AboutUs() {
               issues, and feedback from the developer community.
             </Paragraph>
 
-            <Button
-              type="primary"
-              size="large"
-              icon={<GithubOutlined />}
-              href="https://github.com/itsramin/cvblue"
-              target="_blank"
-              className="bg-gray-900 hover:bg-gray-800 border-0"
-            >
-              View Repository
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button
+                type="primary"
+                size="large"
+                icon={<GithubOutlined />}
+                href="https://github.com/itsramin/cvblue"
+                target="_blank"
+                className="bg-gray-900 hover:bg-gray-800 border-0"
+              >
+                View Repository
+              </Button>
+
+              <Button
+                type="default"
+                size="large"
+                icon={<LayoutOutlined />}
+                href="https://github.com/itsramin/cvblue/blob/main/components/layouts/layout_readme.md"
+                target="_blank"
+                className="border-gray-300"
+              >
+                Design Guide
+              </Button>
+            </div>
           </div>
 
           {/* Footer */}
