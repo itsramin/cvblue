@@ -8,21 +8,11 @@ import Skills from "@/components/form/Skills";
 import WorkExperience from "@/components/form/WorkExperience";
 import { Menu, Layout, Button } from "antd";
 import { useEffect, useState } from "react";
-import {
-  UserOutlined,
-  BuildOutlined,
-  BookOutlined,
-  CodeOutlined,
-  GlobalOutlined,
-  ProjectOutlined,
-  DatabaseOutlined,
-  EyeOutlined,
-  ArrowLeftOutlined,
-} from "@ant-design/icons";
 import Backup from "@/components/form/Backup";
 import Link from "next/link";
 import { useData } from "@/store/store";
 import { useRouter } from "next/navigation";
+import { EyeOutlined, ArrowLeftOutlined } from "@ant-design/icons";
 
 const { Sider, Content } = Layout;
 
@@ -41,32 +31,26 @@ export default function FormPage() {
   const menuItems = [
     {
       key: "personal",
-      icon: <UserOutlined />,
       label: "Personal Information",
     },
     {
       key: "experience",
-      icon: <BuildOutlined />,
       label: "Work Experience",
     },
     {
       key: "education",
-      icon: <BookOutlined />,
       label: "Education",
     },
     {
       key: "skills",
-      icon: <CodeOutlined />,
       label: "Skills",
     },
     {
       key: "languages",
-      icon: <GlobalOutlined />,
       label: "Languages",
     },
     {
       key: "projects",
-      icon: <ProjectOutlined />,
       label: "Projects",
     },
     {
@@ -74,7 +58,6 @@ export default function FormPage() {
     },
     {
       key: "backup",
-      icon: <DatabaseOutlined />,
       label: "Backup",
     },
   ];
