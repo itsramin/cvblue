@@ -69,7 +69,7 @@ export default function PreviewPage() {
     {
       value: "modern",
       label: "Modern",
-      layout: <ModernLayout />,
+      layout: <ModernLayout colors={colors} />,
     },
     {
       value: "formal",

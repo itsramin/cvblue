@@ -4,48 +4,17 @@ import {
   Page,
   Text as PdfText,
   View,
-  Font,
   Link,
   Image,
 } from "@react-pdf/renderer";
-import { MODERN_COLORS, modern_styles } from "./ModernStyle";
+import { createModernStyles } from "./ModernStyle";
+import { IColors } from "@/type/type";
 
-Font.register({
-  family: "Montserrat",
-  fonts: [
-    {
-      src: "/fonts/Montserrat-Regular.ttf",
-      fontWeight: "normal",
-    },
-    {
-      src: "/fonts/Montserrat-Bold.ttf",
-      fontWeight: "bold",
-    },
-    {
-      src: "/fonts/Montserrat-Italic.ttf",
-      fontWeight: "normal",
-      fontStyle: "italic",
-    },
-    {
-      src: "/fonts/Montserrat-Black.ttf",
-      fontWeight: "heavy",
-    },
-    {
-      src: "/fonts/Montserrat-SemiBold.ttf",
-      fontWeight: "semibold",
-    },
-    {
-      src: "/fonts/Montserrat-Light.ttf",
-      fontWeight: "light",
-    },
-  ],
-});
-
-Font.registerHyphenationCallback((word) => [word]);
-
-export default function ModernLayout() {
+export default function ModernLayout({ colors }: { colors: IColors }) {
   const { personalInfo, experiences, educations, skills, languages, projects } =
     useData();
+
+  const moderStyle = createModernStyles(colors);
 
   const formatDate = (dateString: string) => {
     if (!dateString) return "";
@@ -60,51 +29,6 @@ export default function ModernLayout() {
     }
   };
 
-  const getLanguageLevelText = (level: number) => {
-    switch (level) {
-      case 1:
-        return "Basic";
-      case 2:
-        return "Intermediate";
-      case 3:
-        return "Advanced";
-      case 4:
-        return "Native";
-      case 5:
-        return "Fluent";
-      default:
-        return "Basic";
-    }
-  };
-
-  const renderBulletPoints = (text: string) => {
-    if (!text) return null;
-    const points = text.split("\n").filter((point) => point.trim());
-    return (
-      <View style={modern_styles.bulletList}>
-        {points.map((point, index) => (
-          <View key={index} style={{ flexDirection: "row", marginBottom: 4 }}>
-            <PdfText style={modern_styles.bullet}>•</PdfText>
-            <PdfText style={modern_styles.bulletItem}>{point.trim()}</PdfText>
-          </View>
-        ))}
-      </View>
-    );
-  };
-
-  // Group skills by category if they contain a colon (e.g., "Frontend: React, TypeScript")
-  const groupedSkills = skills.reduce((acc, skill) => {
-    if (skill.includes(":")) {
-      const [category, skillList] = skill.split(":");
-      if (!acc[category]) acc[category] = [];
-      skillList.split(",").forEach((s) => acc[category].push(s.trim()));
-    } else {
-      if (!acc["Other"]) acc["Other"] = [];
-      acc["Other"].push(skill);
-    }
-    return acc;
-  }, {} as Record<string, string[]>);
-
   // Check if a string is a valid Base64 image
   const isValidBase64Image = (str: string): boolean => {
     if (!str) return false;
@@ -114,48 +38,48 @@ export default function ModernLayout() {
 
   return (
     <Document>
-      <Page size="A4" style={modern_styles.page}>
+      <Page size="A4" style={moderStyle.page}>
         {/* Left Sidebar */}
-        <View style={modern_styles.sidebar}>
+        <View style={moderStyle.sidebar}>
           {/* Profile */}
-          <View style={modern_styles.profileSection}>
-            <PdfText style={modern_styles.name}>
+          <View style={moderStyle.profileSection}>
+            <PdfText style={moderStyle.name}>
               {personalInfo.name.toUpperCase() || "JOHN DOE"}
             </PdfText>
-            <PdfText style={modern_styles.title}>
+            <PdfText style={moderStyle.title}>
               {personalInfo.title || "Professional"}
             </PdfText>
           </View>
 
           {/* Contact */}
-          <View style={modern_styles.contactSection}>
-            <PdfText style={modern_styles.contactTitle}>Contact</PdfText>
+          <View style={moderStyle.contactSection}>
+            <PdfText style={moderStyle.contactTitle}>Contact</PdfText>
             {personalInfo.email && (
-              <View style={modern_styles.contactItem}>
-                <PdfText style={modern_styles.contactText}>
+              <View style={moderStyle.contactItem}>
+                <PdfText style={moderStyle.contactText}>
                   {personalInfo.email}
                 </PdfText>
               </View>
             )}
             {personalInfo.phone && (
-              <View style={modern_styles.contactItem}>
-                <PdfText style={modern_styles.contactText}>
+              <View style={moderStyle.contactItem}>
+                <PdfText style={moderStyle.contactText}>
                   {personalInfo.phone}
                 </PdfText>
               </View>
             )}
             {personalInfo.location && (
-              <View style={modern_styles.contactItem}>
-                <PdfText style={modern_styles.contactText}>
+              <View style={moderStyle.contactItem}>
+                <PdfText style={moderStyle.contactText}>
                   {personalInfo.location}
                 </PdfText>
               </View>
             )}
             {personalInfo.linkedin && (
-              <View style={modern_styles.contactItem}>
+              <View style={moderStyle.contactItem}>
                 <Link
                   src={personalInfo.linkedin}
-                  style={modern_styles.contactLink}
+                  style={moderStyle.contactLink}
                 >
                   LinkedIn
                 </Link>
@@ -164,8 +88,8 @@ export default function ModernLayout() {
             {personalInfo.links
               ?.filter((link) => link.url.trim())
               .map((link, index) => (
-                <View key={index} style={modern_styles.contactItem}>
-                  <Link src={link.url} style={modern_styles.contactLink}>
+                <View key={index} style={moderStyle.contactItem}>
+                  <Link src={link.url} style={moderStyle.contactLink}>
                     {link.title}
                   </Link>
                 </View>
@@ -174,34 +98,28 @@ export default function ModernLayout() {
 
           {/* Skills */}
           {skills.length > 0 && (
-            <View style={modern_styles.skillsSection}>
-              <PdfText style={modern_styles.contactTitle}>Skills</PdfText>
-              {Object.entries(groupedSkills).map(([category, skillList]) => (
-                <View key={category} style={modern_styles.skillCategory}>
-                  <PdfText style={modern_styles.skillCategoryTitle}>
-                    {category}
-                  </PdfText>
-                  {skillList.map((skill, index) => (
-                    <PdfText key={index} style={modern_styles.skillItem}>
-                      • {skill}
-                    </PdfText>
-                  ))}
-                </View>
+            <View style={moderStyle.skillsSection}>
+              <PdfText style={moderStyle.contactTitle}>Skills</PdfText>
+
+              {skills.map((skill, index) => (
+                <PdfText key={index} style={moderStyle.skillItem}>
+                  • {skill}
+                </PdfText>
               ))}
             </View>
           )}
 
           {/* Languages */}
           {languages.length > 0 && (
-            <View style={modern_styles.languagesSection}>
-              <PdfText style={modern_styles.contactTitle}>Languages</PdfText>
+            <View style={moderStyle.languagesSection}>
+              <PdfText style={moderStyle.contactTitle}>Languages</PdfText>
               {languages.map((language) => (
-                <View key={language.id} style={modern_styles.languageItem}>
-                  <PdfText style={modern_styles.languageName}>
+                <View key={language.id} style={moderStyle.languageItem}>
+                  <PdfText style={moderStyle.languageName}>
                     {language.name}
                   </PdfText>
-                  <PdfText style={modern_styles.languageLevel}>
-                    {getLanguageLevelText(language.level)}
+                  <PdfText style={moderStyle.languageLevel}>
+                    {language.levelLabel}
                   </PdfText>
                 </View>
               ))}
@@ -210,15 +128,15 @@ export default function ModernLayout() {
         </View>
 
         {/* Main Content */}
-        <View style={modern_styles.mainContent}>
+        <View style={moderStyle.mainContent}>
           {/* Professional Summary */}
           {personalInfo.aboutMe && (
-            <View style={modern_styles.section}>
-              <View style={modern_styles.sectionTitle}>
+            <View style={moderStyle.section}>
+              <View style={moderStyle.sectionTitle}>
                 <PdfText>Professional Profile</PdfText>
-                <View style={modern_styles.sectionTitleAccent} />
+                <View style={moderStyle.sectionTitleAccent} />
               </View>
-              <PdfText style={modern_styles.aboutText}>
+              <PdfText style={moderStyle.aboutText}>
                 {personalInfo.aboutMe}
               </PdfText>
             </View>
@@ -226,33 +144,33 @@ export default function ModernLayout() {
 
           {/* Work Experience */}
           {experiences.length > 0 && (
-            <View style={modern_styles.section}>
-              <View style={modern_styles.sectionTitle}>
+            <View style={moderStyle.section}>
+              <View style={moderStyle.sectionTitle}>
                 <PdfText>Work Experience</PdfText>
-                <View style={modern_styles.sectionTitleAccent} />
+                <View style={moderStyle.sectionTitleAccent} />
               </View>
               {experiences.map((experience) => (
-                <View key={experience.id} style={modern_styles.experienceItem}>
-                  <View style={modern_styles.experienceHeader}>
-                    <View style={modern_styles.companyRow}>
-                      <PdfText style={modern_styles.company}>
+                <View key={experience.id} style={moderStyle.experienceItem}>
+                  <View style={moderStyle.experienceHeader}>
+                    <View style={moderStyle.companyRow}>
+                      <PdfText style={moderStyle.company}>
                         {experience.company}
                       </PdfText>
-                      <PdfText style={modern_styles.dateBadge}>
+                      <PdfText style={moderStyle.dateBadge}>
                         {formatDate(experience.startDate)} -{" "}
                         {experience.current
                           ? "Present"
                           : formatDate(experience.endDate)}
                       </PdfText>
                     </View>
-                    <PdfText style={modern_styles.position}>
+                    <PdfText style={moderStyle.position}>
                       {experience.position}
                     </PdfText>
 
-                    {/* General Description (fallback) */}
+                    {/* General Description */}
                     {experience.description && (
-                      <View style={{ marginTop: 8 }}>
-                        <PdfText style={modern_styles.bulletItem}>
+                      <View style={{ marginTop: 8 }} wrap={false}>
+                        <PdfText style={moderStyle.bulletItem}>
                           {experience.description}
                         </PdfText>
                       </View>
@@ -262,25 +180,25 @@ export default function ModernLayout() {
                   {/* Key Responsibilities */}
                   {experience.responsibilities &&
                     experience.responsibilities.length > 0 && (
-                      <View style={{ marginTop: 8 }}>
+                      <View style={{ marginTop: 8 }} wrap={false}>
                         <PdfText
                           style={{
                             fontSize: 10,
                             fontWeight: "bold",
-                            color: MODERN_COLORS.secondary,
+                            color: colors.secondary,
                             marginBottom: 4,
                           }}
                         >
                           Key Responsibilities:
                         </PdfText>
-                        <View style={modern_styles.bulletList}>
+                        <View style={moderStyle.bulletList}>
                           {experience.responsibilities.map((resp, index) => (
                             <View
                               key={index}
                               style={{ flexDirection: "row", marginBottom: 4 }}
                             >
-                              <PdfText style={modern_styles.bullet}>•</PdfText>
-                              <PdfText style={modern_styles.bulletItem}>
+                              <PdfText style={moderStyle.bullet}>•</PdfText>
+                              <PdfText style={moderStyle.bulletItem}>
                                 {resp}
                               </PdfText>
                             </View>
@@ -292,25 +210,25 @@ export default function ModernLayout() {
                   {/* Achievements */}
                   {experience.achievements &&
                     experience.achievements.length > 0 && (
-                      <View style={{ marginTop: 8 }}>
+                      <View style={{ marginTop: 8 }} wrap={false}>
                         <PdfText
                           style={{
                             fontSize: 10,
                             fontWeight: "bold",
-                            color: MODERN_COLORS.highlight,
+                            color: colors.secondary,
                             marginBottom: 4,
                           }}
                         >
                           Key Achievements:
                         </PdfText>
-                        <View style={modern_styles.bulletList}>
+                        <View style={moderStyle.bulletList}>
                           {experience.achievements.map((achievement, index) => (
                             <View
                               key={index}
                               style={{ flexDirection: "row", marginBottom: 4 }}
                             >
-                              <PdfText style={modern_styles.bullet}>•</PdfText>
-                              <PdfText style={modern_styles.bulletItem}>
+                              <PdfText style={moderStyle.bullet}>•</PdfText>
+                              <PdfText style={moderStyle.bulletItem}>
                                 {achievement}
                               </PdfText>
                             </View>
@@ -323,41 +241,38 @@ export default function ModernLayout() {
             </View>
           )}
 
-          {experiences.length > 0 &&
-            (educations.length > 0 || projects.length > 0) && (
-              <View style={modern_styles.divider} />
-            )}
-
           {/* Education */}
           {educations.length > 0 && (
-            <View style={modern_styles.section}>
-              <View style={modern_styles.sectionTitle}>
+            <View style={moderStyle.section}>
+              <View style={moderStyle.sectionTitle}>
                 <PdfText>Education</PdfText>
-                <View style={modern_styles.sectionTitleAccent} />
+                <View style={moderStyle.sectionTitleAccent} />
               </View>
               {educations.map((education) => (
-                <View key={education.id} style={modern_styles.educationItem}>
-                  <View style={modern_styles.educationHeader}>
-                    <PdfText style={modern_styles.educationTitle}>
-                      {education.degree} in {education.field}
-                    </PdfText>
-                    <PdfText style={modern_styles.educationDate}>
+                <View key={education.id} style={moderStyle.educationItem}>
+                  <PdfText style={moderStyle.educationTitle}>
+                    {education.degree} in {education.field}
+                  </PdfText>
+
+                  <PdfText style={moderStyle.educationDetails}>
+                    {education.institution}
+                  </PdfText>
+                  <View style={moderStyle.educationHeader}>
+                    <PdfText style={moderStyle.educationDate}>
                       {formatDate(education.startDate)} -{" "}
                       {education.current
                         ? "Present"
                         : formatDate(education.endDate)}
                     </PdfText>
+                    {education.gpa && (
+                      <PdfText style={moderStyle.educationDetails}>
+                        GPA: {education.gpa}
+                      </PdfText>
+                    )}
                   </View>
-                  <PdfText style={modern_styles.educationDetails}>
-                    {education.institution}
-                  </PdfText>
-                  {education.gpa && (
-                    <PdfText style={modern_styles.educationDetails}>
-                      GPA: {education.gpa}
-                    </PdfText>
-                  )}
+
                   {education.description && (
-                    <PdfText style={modern_styles.educationDetails}>
+                    <PdfText style={moderStyle.educationDetails}>
                       {education.description}
                     </PdfText>
                   )}
@@ -368,37 +283,37 @@ export default function ModernLayout() {
 
           {/* Projects */}
           {projects.length > 0 && (
-            <View style={modern_styles.section}>
-              <View style={modern_styles.sectionTitle}>
+            <View style={moderStyle.section}>
+              <View style={moderStyle.sectionTitle}>
                 <PdfText>Projects</PdfText>
-                <View style={modern_styles.sectionTitleAccent} />
+                <View style={moderStyle.sectionTitleAccent} />
               </View>
               {projects.map((project) => (
-                <View key={project.id} style={modern_styles.projectItem}>
-                  <View style={modern_styles.projectHeader}>
-                    <PdfText style={modern_styles.projectTitle}>
+                <View key={project.id} style={moderStyle.projectItem}>
+                  <View style={moderStyle.projectHeader}>
+                    <PdfText style={moderStyle.projectTitle}>
                       {project.name}
                     </PdfText>
                     {project.role && (
-                      <PdfText style={modern_styles.projectRole}>
+                      <PdfText style={moderStyle.projectRole}>
                         Role: {project.role}
                       </PdfText>
                     )}
                     {project.date && (
-                      <PdfText style={modern_styles.projectDate}>
+                      <PdfText style={moderStyle.projectDate}>
                         {formatDate(project.date)}
                       </PdfText>
                     )}
                   </View>
 
-                  <PdfText style={modern_styles.projectDescription}>
+                  <PdfText style={moderStyle.projectDescription}>
                     {project.description}
                   </PdfText>
 
                   {project.technologies && project.technologies.length > 0 && (
-                    <View style={modern_styles.techContainer}>
+                    <View style={moderStyle.techContainer}>
                       {project.technologies.map((tech, index) => (
-                        <PdfText key={index} style={modern_styles.projectTech}>
+                        <PdfText key={index} style={moderStyle.projectTech}>
                           {tech}
                         </PdfText>
                       ))}
@@ -407,24 +322,24 @@ export default function ModernLayout() {
 
                   {/* Project Images */}
                   {project.images && project.images.length > 0 && (
-                    <View style={modern_styles.projectImagesContainer}>
+                    <View style={moderStyle.projectImagesContainer}>
                       <PdfText
                         style={{
                           fontSize: 9,
-                          color: MODERN_COLORS.lightText,
+                          color: colors.secondary,
                           marginBottom: 5,
                         }}
                       >
                         Screenshots:
                       </PdfText>
-                      <View style={modern_styles.projectImageRow}>
+                      <View style={moderStyle.projectImageRow}>
                         {project.images.map((image, index) => {
                           if (isValidBase64Image(image)) {
                             return (
                               <Image
                                 key={index}
                                 src={image}
-                                style={modern_styles.projectImage}
+                                style={moderStyle.projectImage}
                               />
                             );
                           }
@@ -438,7 +353,7 @@ export default function ModernLayout() {
                     <View style={{ marginTop: 10 }}>
                       <Link
                         src={project.link}
-                        style={{ fontSize: 9, color: MODERN_COLORS.accent }}
+                        style={{ fontSize: 9, color: colors.accent }}
                       >
                         View Project
                       </Link>
