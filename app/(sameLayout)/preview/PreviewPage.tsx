@@ -49,7 +49,7 @@ const PDFViewer = dynamic(
 
 export default function PreviewPage() {
   const { personalInfo, activeCVId } = useData();
-  const [activeLayout, setActiveLayout] = useState("classic");
+  const [activeLayout, setActiveLayout] = useState("modern");
   const [colors, setColors] = useState(initColors);
 
   const nav = useRouter();
@@ -61,11 +61,11 @@ export default function PreviewPage() {
   }, [activeCVId]);
 
   const layouts = [
-    {
-      value: "classic",
-      label: "Classic",
-      layout: <ClassicLayout />,
-    },
+    // {
+    //   value: "classic",
+    //   label: "Classic",
+    //   layout: <ClassicLayout />,
+    // },
     {
       value: "modern",
       label: "Modern",

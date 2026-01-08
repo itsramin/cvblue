@@ -75,7 +75,7 @@ export const createModernStyles = (colors?: {
       marginBottom: 40,
     },
     name: {
-      fontSize: 26,
+      fontSize: 24,
       fontWeight: "bold",
       color: "#FFFFFF",
       marginBottom: 8,
