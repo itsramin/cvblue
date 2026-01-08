@@ -60,6 +60,7 @@ export interface ILanguage {
   id: number;
   name: string;
   level: number;
+  levelLabel: string;
 }
 
 export interface IProject {

@@ -65,24 +65,6 @@ export default function FormalLayout({ colors }: { colors: IColors }) {
     );
   };
 
-  // Render language levels
-  const getLanguageLevelText = (level: number) => {
-    switch (level) {
-      case 1:
-        return "Basic";
-      case 2:
-        return "Intermediate";
-      case 3:
-        return "Advanced";
-      case 4:
-        return "Native";
-      case 5:
-        return "Fluent";
-      default:
-        return "Basic";
-    }
-  };
-
   return (
     <Document>
       <Page size="A4" style={FormalStyles.page}>
@@ -266,7 +248,7 @@ export default function FormalLayout({ colors }: { colors: IColors }) {
               <PdfText style={FormalStyles.sectionTitle}>Languages</PdfText>
               {languages.map((language) => (
                 <PdfText key={language.id} style={FormalStyles.languageItem}>
-                  • {language.name} ({getLanguageLevelText(language.level)})
+                  • {language.name} ({language.levelLabel})
                 </PdfText>
               ))}
             </View>

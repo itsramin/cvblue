@@ -23,8 +23,8 @@ const LANGUAGE_LEVELS: LevelOption[] = [
   { value: 1, label: "Beginner", color: "gray" },
   { value: 2, label: "Intermediate", color: "blue" },
   { value: 3, label: "Advanced", color: "green" },
-  { value: 4, label: "Native", color: "red" },
-  { value: 5, label: "Fluent", color: "purple" },
+  { value: 4, label: "Fluent", color: "red" },
+  { value: 5, label: "Native", color: "purple" },
 ];
 
 const Languages: React.FC = () => {
@@ -41,6 +41,9 @@ const Languages: React.FC = () => {
       name: values.name,
       level: LANGUAGE_LEVELS.find((l) => l.value === values.level)?.value || 1,
       id: Date.now(),
+      levelLabel:
+        LANGUAGE_LEVELS.find((l) => l.value === values.level)?.label ||
+        "Beginner",
     };
     const sorted = [...enteredLanguages, newLanguage].sort(
       (a, b) => b.level - a.level
