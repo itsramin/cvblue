@@ -26,7 +26,7 @@ import {
 import React, { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import EditableList from "../UI/EditableList";
-import { EditableItem } from "@/type/type";
+import { IEditableItem } from "@/type/type";
 
 const { Item } = Form;
 const { TextArea } = Input;
@@ -53,8 +53,9 @@ export default function WorkExperience() {
     }[]
   >([]);
   const [isCurrent, setIsCurrent] = useState(false);
-  const [responsibilities, setResponsibilities] = useState<EditableItem[]>([]);
-  const [achievements, setAchievements] = useState<EditableItem[]>([]);
+  const [responsibilities, setResponsibilities] = useState<IEditableItem[]>([]);
+  const [achievements, setAchievements] = useState<IEditableItem[]>([]);
+  const [canSubmit, setCanSubmit] = useState(true);
 
   useEffect(() => {
     // Sort experiences by date (newer first)
@@ -177,6 +178,7 @@ export default function WorkExperience() {
   };
 
   const submitHandler = (values: any) => {
+    if (!canSubmit) return;
     const newEx = {
       id: editingId || Date.now().toString(),
       company: values.company,
@@ -203,14 +205,14 @@ export default function WorkExperience() {
     if (experience) {
       setEditingId(id);
 
-      const responsibilityItems: EditableItem[] =
+      const responsibilityItems: IEditableItem[] =
         experience.responsibilities.map((item, index) => ({
           id: `resp-${Date.now()}-${index}`,
           content: item,
           isEditing: false,
         }));
 
-      const achievementItems: EditableItem[] = experience.achievements.map(
+      const achievementItems: IEditableItem[] = experience.achievements.map(
         (item, index) => ({
           id: `achieve-${Date.now()}-${index}`,
           content: item,
@@ -376,6 +378,8 @@ export default function WorkExperience() {
                 onItemsChange={setResponsibilities}
                 placeholder="Add a responsibility..."
                 label="Key Responsibilities"
+                onFocusEditableList={() => setCanSubmit(false)}
+                onBlurEditableList={() => setCanSubmit(true)}
               />
             </Col>
 
@@ -386,6 +390,8 @@ export default function WorkExperience() {
                 onItemsChange={setAchievements}
                 placeholder="Add an achievement..."
                 label="Key Achievements"
+                onFocusEditableList={() => setCanSubmit(false)}
+                onBlurEditableList={() => setCanSubmit(true)}
               />
             </Col>
 

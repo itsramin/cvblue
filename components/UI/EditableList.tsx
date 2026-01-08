@@ -1,6 +1,6 @@
 // EditableList.tsx
 import React, { useState } from "react";
-import { Input, Button, Space } from "antd";
+import { Input, Button, Space, Form } from "antd";
 import {
   EditOutlined,
   DeleteOutlined,
@@ -11,15 +11,17 @@ import {
   UpOutlined,
   DownOutlined,
 } from "@ant-design/icons";
-import { EditableItem } from "@/type/type";
+import { IEditableItem } from "@/type/type";
 import { Text } from "./MyText";
 
 interface EditableListProps {
-  items: EditableItem[];
-  onItemsChange: (items: EditableItem[]) => void;
+  items: IEditableItem[];
+  onFocusEditableList?: () => void;
+  onBlurEditableList?: () => void;
+  onItemsChange: (items: IEditableItem[]) => void;
   placeholder?: string;
   label?: string;
-  canReorder?: boolean;
+  reorderable?: boolean;
 }
 
 export default function EditableList({
@@ -27,7 +29,9 @@ export default function EditableList({
   onItemsChange,
   placeholder = "Add an item...",
   label = "Items",
-  canReorder = true,
+  reorderable = true,
+  onFocusEditableList,
+  onBlurEditableList,
 }: EditableListProps) {
   const [newItem, setNewItem] = useState("");
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
@@ -35,7 +39,7 @@ export default function EditableList({
 
   const addItem = () => {
     if (newItem.trim()) {
-      const newItemObj: EditableItem = {
+      const newItemObj: IEditableItem = {
         id: `item-${Date.now()}`,
         content: newItem.trim(),
         isEditing: false,
@@ -132,7 +136,7 @@ export default function EditableList({
     setDragOverIndex(null);
   };
 
-  const renderItem = (item: EditableItem, index: number) => {
+  const renderItem = (item: IEditableItem, index: number) => {
     const isDragged = draggedIndex === index;
     const isDragOver = dragOverIndex === index;
 
@@ -146,7 +150,7 @@ export default function EditableList({
               ? "border-solid border-blue-500 bg-blue-50"
               : "border-gray-200"
           }`}
-        draggable={canReorder}
+        draggable={reorderable}
         onDragStart={() => handleDragStart(index)}
         onDragOver={(e) => handleDragOver(e, index)}
         onDragLeave={handleDragLeave}
@@ -155,16 +159,16 @@ export default function EditableList({
       >
         {item.isEditing ? (
           <div className="flex items-center w-full">
-            {canReorder && (
+            {reorderable && (
               <div className="mr-2 cursor-move text-gray-400">
                 <HolderOutlined />
               </div>
             )}
             <Input
               defaultValue={item.content}
-              onPressEnter={(e) =>
-                saveEditedItem(item.id, e.currentTarget.value)
-              }
+              onPressEnter={(e) => {
+                saveEditedItem(item.id, e.currentTarget.value);
+              }}
               onBlur={(e) => saveEditedItem(item.id, e.target.value)}
               autoFocus
               className="flex-1 mr-2"
@@ -192,7 +196,7 @@ export default function EditableList({
         ) : (
           <>
             <div className="flex items-center flex-1">
-              {canReorder && (
+              {reorderable && (
                 <div className="mr-2 cursor-move text-gray-400 hover:text-gray-600">
                   <HolderOutlined />
                 </div>
@@ -200,7 +204,7 @@ export default function EditableList({
               <Text className="flex-1">{item.content}</Text>
             </div>
             <Space>
-              {canReorder && (
+              {reorderable && (
                 <>
                   <Button
                     type="text"
@@ -254,6 +258,8 @@ export default function EditableList({
             value={newItem}
             onChange={(e) => setNewItem(e.target.value)}
             onPressEnter={addItem}
+            onFocus={onFocusEditableList}
+            onBlur={onBlurEditableList}
           />
           <Button type="primary" onClick={addItem} icon={<PlusOutlined />}>
             Add

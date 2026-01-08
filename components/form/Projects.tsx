@@ -33,7 +33,7 @@ import React, { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import EditableList from "../UI/EditableList";
 import type { RcFile } from "antd/es/upload";
-import { EditableItem } from "@/type/type";
+import { IEditableItem } from "@/type/type";
 
 const { Item } = Form;
 const { TextArea } = Input;
@@ -62,7 +62,7 @@ export default function Projects() {
       images?: string[];
     }[]
   >([]);
-  const [technologies, setTechnologies] = useState<EditableItem[]>([]);
+  const [technologies, setTechnologies] = useState<IEditableItem[]>([]);
   const [imagesBase64, setImagesBase64] = useState<string[]>([]);
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -70,6 +70,7 @@ export default function Projects() {
   const [previewTitle, setPreviewTitle] = useState("");
   const [messageApi, contextHolder] = message.useMessage();
   const [isLoading, setIsLoading] = useState(true);
+  const [canSubmit, setCanSubmit] = useState(true);
 
   const beforeUpload = (file: RcFile, fileList: RcFile[]) => {
     const isImage = file.type.startsWith("image/");
@@ -286,6 +287,8 @@ export default function Projects() {
   );
 
   const submitHandler = async (values: any) => {
+    if (!canSubmit) return;
+
     const newProject = {
       id: editingId || Date.now().toString(),
       name: values.name,
@@ -314,7 +317,7 @@ export default function Projects() {
     if (project) {
       setEditingId(id);
 
-      const techItems: EditableItem[] = (project.technologies || []).map(
+      const techItems: IEditableItem[] = (project.technologies || []).map(
         (item, index) => ({
           id: `tech-${Date.now()}-${index}`,
           content: item,
@@ -489,6 +492,8 @@ export default function Projects() {
                 items={technologies}
                 onItemsChange={setTechnologies}
                 placeholder="Add a technology (e.g., React, Node.js)"
+                onFocusEditableList={() => setCanSubmit(false)}
+                onBlurEditableList={() => setCanSubmit(true)}
               />
             </Col>
 
