@@ -56,15 +56,6 @@ export default function Hero() {
                   Start Building Your CV
                 </Button>
               </Link>
-              {/* <Link href={"/preview"}>
-                  <Button
-                    size="large"
-                    icon={<EyeOutlined />}
-                    className="h-12 px-8"
-                  >
-                    Preview Template
-                  </Button>
-                </Link> */}
             </div>
 
             <p className="text-sm text-gray-500 pt-4">
@@ -119,7 +110,7 @@ export default function Hero() {
                     block
                     type="default"
                     icon={<DownloadOutlined />}
-                    className="border-blue-200 text-blue-600 hover:text-blue-700 hover:border-blue-300"
+                    className=" !cursor-auto"
                   >
                     Download PDF Template
                   </Button>
