@@ -2,7 +2,16 @@
 
 import { useData } from "@/store/store";
 import { useEffect, useState } from "react";
-import { Card, Row, Col, Button, Space, Layout, Radio } from "antd";
+import {
+  Card,
+  Row,
+  Col,
+  Button,
+  Space,
+  Layout,
+  Radio,
+  ColorPicker,
+} from "antd";
 import {
   ArrowLeftOutlined,
   DownloadOutlined,
@@ -17,6 +26,15 @@ import ModernLayout from "../../../components/layouts/modern/ModernLayout";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Text, Title } from "@/components/UI/MyText";
+import FormalLayout from "@/components/layouts/formal/FormalLayout";
+import { IColor } from "@/type/type";
+
+const initColors = {
+  primary: "#1A365D",
+  secondary: "#718096",
+  border: "#dc940f",
+  accent: "#3182CE",
+};
 
 // Dynamically import PDF components to avoid SSR issues
 const PDFDownloadLink = dynamic(
@@ -32,6 +50,7 @@ const PDFViewer = dynamic(
 export default function PreviewPage() {
   const { personalInfo, activeCVId } = useData();
   const [activeLayout, setActiveLayout] = useState("classic");
+  const [colors, setColors] = useState(initColors);
 
   const nav = useRouter();
 
@@ -52,6 +71,11 @@ export default function PreviewPage() {
       label: "Modern",
       layout: <ModernLayout />,
     },
+    {
+      value: "formal",
+      label: "Formal",
+      layout: <FormalLayout colors={colors} />,
+    },
   ];
 
   // Generate filename
@@ -59,6 +83,17 @@ export default function PreviewPage() {
     return `${personalInfo.name || "cv"}_${new Date()
       .toLocaleDateString()
       .replace(/\//g, "-")}.pdf`;
+  };
+
+  const handleColorChange = (type: IColor, color: string) => {
+    setColors((prev) => ({
+      ...prev,
+      [type]: color,
+    }));
+  };
+
+  const resetColors = () => {
+    setColors(initColors);
   };
 
   return (
@@ -83,6 +118,7 @@ export default function PreviewPage() {
               </Title>
               <Text type="secondary">Customize your CV appearance</Text>
             </div>
+
             <Card title="Layout">
               <Radio.Group
                 value={activeLayout}
@@ -94,6 +130,74 @@ export default function PreviewPage() {
                   gap: 8,
                 }}
               />
+            </Card>
+
+            <Card
+              title={<div className="flex items-center">Colors</div>}
+              extra={
+                <Button
+                  type="link"
+                  size="small"
+                  onClick={resetColors}
+                  className="p-0"
+                >
+                  Reset
+                </Button>
+              }
+            >
+              <Space direction="vertical" size="middle" className="w-full">
+                <div>
+                  <Text strong>Primary Color</Text>
+                  <div className="flex items-center gap-2 mt-2">
+                    <ColorPicker
+                      value={colors.primary}
+                      onChange={(color) =>
+                        handleColorChange("primary", color.toHexString())
+                      }
+                      showText
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <Text strong>Accent Color</Text>
+                  <div className="flex items-center gap-2 mt-2">
+                    <ColorPicker
+                      value={colors.accent}
+                      onChange={(color) =>
+                        handleColorChange("accent", color.toHexString())
+                      }
+                      showText
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <Text strong>Secondary Color</Text>
+                  <div className="flex items-center gap-2 mt-2">
+                    <ColorPicker
+                      value={colors.secondary}
+                      onChange={(color) =>
+                        handleColorChange("secondary", color.toHexString())
+                      }
+                      showText
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <Text strong>Border Color</Text>
+                  <div className="flex items-center gap-2 mt-2">
+                    <ColorPicker
+                      value={colors.border}
+                      onChange={(color) =>
+                        handleColorChange("border", color.toHexString())
+                      }
+                      showText
+                    />
+                  </div>
+                </div>
+              </Space>
             </Card>
           </Space>
         </div>
@@ -124,7 +228,7 @@ export default function PreviewPage() {
                 )}
               </PDFDownloadLink>
             </div>
-            <div className="h-[600px]">
+            <div className="h-[580px]">
               <PDFViewer width="100%" height="100%" showToolbar={false}>
                 {layouts.find((l) => l.value === activeLayout)?.layout}
               </PDFViewer>

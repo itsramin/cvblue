@@ -94,3 +94,12 @@ export interface EditableItem {
   content: string;
   isEditing: boolean;
 }
+
+export interface IColors {
+  primary: string;
+  secondary: string;
+  border: string;
+  accent: string;
+}
+
+export type IColor = "primary" | "secondary" | "border" | "accent";
