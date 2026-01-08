@@ -1,4 +1,4 @@
-import { ExportData, ICVCollection } from "@/type/type";
+import { IExportData, ICVCollection } from "@/type/type";
 
 // Helper function to convert JSON to XML
 export const jsonToXml = (obj: any, rootName = "root"): string => {
@@ -99,7 +99,7 @@ export const xmlToJson = (xmlStr: string, isCollection = false): any => {
 };
 
 // Validate imported data structure for single CV
-export const isValidCVData = (data: any): data is ExportData => {
+export const isValidCVData = (data: any): data is IExportData => {
   return (
     data &&
     typeof data === "object" &&

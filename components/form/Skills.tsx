@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useData } from "@/store/store";
 import EditableList from "../UI/EditableList";
-import { EditableItem } from "@/type/type";
+import { IEditableItem } from "@/type/type";
 
 const Skills: React.FC = () => {
   const { updateSkills, skills } = useData();
-  const [items, setItems] = useState<EditableItem[]>([]);
+  const [items, setItems] = useState<IEditableItem[]>([]);
 
   useEffect(() => {
     const initialItems = skills.map((skill, index) => ({
@@ -21,13 +21,13 @@ const Skills: React.FC = () => {
     updateSkills(skillContents);
   }, [items, updateSkills]);
 
-  const handleItemsChange = (newItems: EditableItem[]) => {
+  const handleItemsChange = (newItems: IEditableItem[]) => {
     setItems(newItems);
   };
 
   return (
     <EditableList
-      canReorder
+      reorderable
       items={items}
       onItemsChange={handleItemsChange}
       placeholder="Add a skill..."

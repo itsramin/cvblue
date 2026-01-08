@@ -74,7 +74,7 @@ export interface IProject {
   images?: string[];
 }
 
-export interface ExportData {
+export interface IExportData {
   personalInfo: IPersonalInfo;
   experiences: IExperience[];
   educations: IEducation[];
@@ -90,7 +90,7 @@ export interface IStyleOptions {
   secondaryColor: string;
 }
 
-export interface EditableItem {
+export interface IEditableItem {
   id: string;
   content: string;
   isEditing: boolean;
