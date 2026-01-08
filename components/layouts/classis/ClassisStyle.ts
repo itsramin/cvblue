@@ -15,7 +15,7 @@ export const classic_styles = StyleSheet.create({
     flexDirection: "column",
     backgroundColor: "#FFFFFF",
     padding: 40,
-    fontFamily: "Arial",
+    fontFamily: "Montserrat",
     fontSize: 11,
     color: "#333333",
   },

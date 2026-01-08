@@ -11,7 +11,7 @@ export const MODERN_COLORS = {
 };
 
 const styleOptions = {
-  fontFamily: "Helvetica",
+  fontFamily: "Montserrat",
   fontSize: 12,
   primaryColor: "#1890ff",
   secondaryColor: "#52c41a",

@@ -11,20 +11,32 @@ import {
 import { classic_styles } from "./ClassisStyle";
 
 Font.register({
-  family: "Arial",
+  family: "Montserrat",
   fonts: [
     {
-      src: "/fonts/IRANSans.ttf",
+      src: "/fonts/Montserrat-Regular.ttf",
       fontWeight: "normal",
     },
     {
-      src: "/fonts/IRANSans_Bold.ttf",
+      src: "/fonts/Montserrat-Bold.ttf",
       fontWeight: "bold",
     },
     {
-      src: "/fonts/IRANSans.ttf",
+      src: "/fonts/Montserrat-Italic.ttf",
       fontWeight: "normal",
       fontStyle: "italic",
+    },
+    {
+      src: "/fonts/Montserrat-Black.ttf",
+      fontWeight: "heavy",
+    },
+    {
+      src: "/fonts/Montserrat-SemiBold.ttf",
+      fontWeight: "semibold",
+    },
+    {
+      src: "/fonts/Montserrat-Light.ttf",
+      fontWeight: "light",
     },
   ],
 });
