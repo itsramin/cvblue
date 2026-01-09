@@ -1,4 +1,5 @@
 import {
+  ICertification,
   ICV,
   IEducation,
   IExperience,
@@ -24,6 +25,7 @@ interface UserDataState {
   skills: ISkills;
   languages: ILanguage[];
   projects: IProject[];
+  certifications: ICertification[];
   activeCV: ICV | null;
 
   // === CV Management ===
@@ -58,6 +60,13 @@ interface UserDataState {
     projectId: string,
     data: Partial<IProject>
   ) => void;
+  addCertificationToCV: (cvId: string, data: ICertification) => void;
+  removeCertificationFromCV: (cvId: string, cerId: string) => void;
+  updateCertificationInCV: (
+    cvId: string,
+    cerId: string,
+    data: Partial<IEducation>
+  ) => void;
   importDataToCV: (cvId: string, data: Partial<ICV>) => void;
 
   // === Active CV Convenience Methods (Implicit) ===
@@ -76,6 +85,9 @@ interface UserDataState {
   addProject: (data: IProject) => void;
   removeProject: (projectId: string) => void;
   updateProject: (projectId: string, data: Partial<IProject>) => void;
+  addCertification: (data: ICertification) => void;
+  removeCertification: (cerId: string) => void;
+  updateCertification: (cerId: string, data: Partial<ICertification>) => void;
   importData: (data: Partial<ICV>) => void;
 }
 
@@ -103,6 +115,7 @@ const initialCV = (name?: string): ICV => ({
   skills: [],
   languages: [],
   projects: [],
+  certifications: [],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 });
@@ -119,6 +132,7 @@ const getActiveCVData = (state: { cvs: ICV[]; activeCVId: string | null }) => {
     skills: activeCV?.skills || [],
     languages: activeCV?.languages || [],
     projects: activeCV?.projects || [],
+    certifications: activeCV?.certifications || [],
   };
 };
 
@@ -138,6 +152,7 @@ export const useData = create<UserDataState>()(
         skills: [],
         languages: [],
         projects: [],
+        certifications: [],
         activeCV: null,
       };
 
@@ -548,6 +563,76 @@ export const useData = create<UserDataState>()(
           });
         },
 
+        addCertificationToCV: (cvId, data) => {
+          set((state) => {
+            const newState = {
+              cvs: state.cvs.map((c) =>
+                c.id === cvId
+                  ? {
+                      ...c,
+                      certifications: [...c.certifications, data],
+                      updatedAt: new Date().toISOString(),
+                    }
+                  : c
+              ),
+              activeCVId: state.activeCVId,
+            };
+
+            return {
+              ...newState,
+              ...getActiveCVData(newState),
+            };
+          });
+        },
+
+        removeCertificationFromCV: (cvId, cerId) => {
+          set((state) => {
+            const newState = {
+              cvs: state.cvs.map((c) =>
+                c.id === cvId
+                  ? {
+                      ...c,
+                      certifications: c.certifications.filter(
+                        (cer) => cer.id !== cerId
+                      ),
+                      updatedAt: new Date().toISOString(),
+                    }
+                  : c
+              ),
+              activeCVId: state.activeCVId,
+            };
+
+            return {
+              ...newState,
+              ...getActiveCVData(newState),
+            };
+          });
+        },
+
+        updateCertificationInCV: (cvId, cerId, data) => {
+          set((state) => {
+            const newState = {
+              cvs: state.cvs.map((c) =>
+                c.id === cvId
+                  ? {
+                      ...c,
+                      certifications: c.certifications.map((cer) =>
+                        cer.id === cerId ? { ...cer, ...data } : cer
+                      ),
+                      updatedAt: new Date().toISOString(),
+                    }
+                  : c
+              ),
+              activeCVId: state.activeCVId,
+            };
+
+            return {
+              ...newState,
+              ...getActiveCVData(newState),
+            };
+          });
+        },
+
         // === Active CV Convenience Methods ===
         updatePersonalInfo: (field, value) => {
           const { activeCVId } = get();
@@ -631,6 +716,27 @@ export const useData = create<UserDataState>()(
           if (!activeCVId) return;
 
           get().updateProjectInCV(activeCVId, projectId, data);
+        },
+
+        addCertification: (data) => {
+          const { activeCVId } = get();
+          if (!activeCVId) return;
+
+          get().addCertificationToCV(activeCVId, data);
+        },
+
+        removeCertification: (cerId) => {
+          const { activeCVId } = get();
+          if (!activeCVId) return;
+
+          get().removeCertificationFromCV(activeCVId, cerId);
+        },
+
+        updateCertification: (cerId, data) => {
+          const { activeCVId } = get();
+          if (!activeCVId) return;
+
+          get().updateCertificationInCV(activeCVId, cerId, data);
         },
 
         importData: (data) => {

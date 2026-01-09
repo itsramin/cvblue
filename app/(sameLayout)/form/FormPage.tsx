@@ -13,6 +13,7 @@ import Link from "next/link";
 import { useData } from "@/store/store";
 import { useRouter } from "next/navigation";
 import { EyeOutlined, ArrowLeftOutlined } from "@ant-design/icons";
+import Certifications from "@/components/form/Certificates";
 
 const { Sider, Content } = Layout;
 
@@ -54,6 +55,10 @@ export default function FormPage() {
       label: "Projects",
     },
     {
+      key: "certifications",
+      label: "Certifications",
+    },
+    {
       type: "divider" as const,
     },
     {
@@ -81,6 +86,8 @@ export default function FormPage() {
         return <Languages />;
       case "projects":
         return <Projects />;
+      case "certifications":
+        return <Certifications />;
       case "backup":
         return <Backup />;
       default:

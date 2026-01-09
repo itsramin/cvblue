@@ -7,6 +7,7 @@ export interface ICV {
   skills: ISkills;
   languages: ILanguage[];
   projects: IProject[];
+  certifications: ICertification[];
   createdAt: string;
   updatedAt: string;
 }
@@ -54,6 +55,15 @@ export interface IEducation {
   gpa?: string;
   description: string;
 }
+
+export interface ICertification {
+  id: string;
+  title: string;
+  date: string;
+  url: string;
+  description: string;
+}
+
 export type ISkills = string[];
 
 export interface ILanguage {
